@@ -1,0 +1,5 @@
+name: Phazecraft
+version: 0.1
+author: Phazerous
+main: com.phazerous.phazerous.Phazerous
+api-version: 1.8
