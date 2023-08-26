@@ -16,5 +16,5 @@ public class EntityDto {
 
     private long hardness;
 
-    private List<ObjectId> drops;
+    private List<ObjectId> dropsIds;
 }

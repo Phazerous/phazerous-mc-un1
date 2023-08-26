@@ -9,12 +9,12 @@ import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
-import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class DBManager {
@@ -123,6 +123,12 @@ public class DBManager {
                 .first();
     }
 
+    public RuntimeEntityDto getRuntimeEntityDtoByUUID(UUID uuid) {
+        Document query = new Document("uuid", uuid);
+
+        return getCollection(RuntimeEntityDto.class).find(query)
+                .first();
+    }
 
     public void close() {
         if (mongoClient != null) mongoClient.close();
