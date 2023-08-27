@@ -21,8 +21,8 @@ public class ScoreboardManager {
     }
 
     public void createBoard(Player player) {
-        final int SCOREBOARD_BALANCE_POSITION = 3;
-        final String SCOREBOARD_TITLE = ChatColor.BLACK + "PhazerousMC";
+        final int SCOREBOARD_BALANCE_POSITION = 2;
+        final String SCOREBOARD_TITLE = ChatColor.GOLD + "PhazerousMC";
 
         double balance = economyManager.getPlayerBalanceByUUID(player.getUniqueId());
 
