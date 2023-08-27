@@ -154,6 +154,13 @@ public class DBManager {
         getCollection(PlayerBalanceDto.class).insertOne(playerBalanceDto);
     }
 
+    public CustomInventoryDto getCustomInventoryDtoById(ObjectId id) {
+        Document query = new Document("_id", id);
+
+        return getCollection(CustomInventoryDto.class).find(query)
+                .first();
+    }
+
     public void close() {
         if (mongoClient != null) mongoClient.close();
     }

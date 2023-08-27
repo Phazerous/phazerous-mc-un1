@@ -9,7 +9,8 @@ public enum CollectionType {
     ENTITY("entities"),
     ITEM("items"),
     RUNTIME_ENTITY("runtime_entities"),
-    PLAYER_BALANCE("player_balances");
+    PLAYER_BALANCE("player_balances"),
+    CUSTOM_INVENTORY("custom_inventories");
 
     private final String collectionName;
 
@@ -28,6 +29,8 @@ public enum CollectionType {
             return RUNTIME_ENTITY;
         } else if (clazz == PlayerBalanceDto.class) {
             return PLAYER_BALANCE;
+        } else if (clazz == CustomInventoryDto.class) {
+            return CUSTOM_INVENTORY;
         }
 
         return null;

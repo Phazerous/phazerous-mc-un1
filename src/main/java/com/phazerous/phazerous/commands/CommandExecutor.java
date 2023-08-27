@@ -1,7 +1,9 @@
 package com.phazerous.phazerous.commands;
 
+import com.phazerous.phazerous.gui.CustomInventoryManager;
 import com.phazerous.phazerous.managers.EconomyManager;
 import com.phazerous.phazerous.managers.ScoreboardManager;
+import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -10,10 +12,12 @@ import org.bukkit.entity.Player;
 public class CommandExecutor implements org.bukkit.command.CommandExecutor {
     private final EconomyManager economyManager;
     private final ScoreboardManager scoreboardManager;
+    private final CustomInventoryManager customInventoryManager;
 
-    public CommandExecutor(EconomyManager economyManager, ScoreboardManager scoreboardManager) {
+    public CommandExecutor(EconomyManager economyManager, ScoreboardManager scoreboardManager, CustomInventoryManager customInventoryManager) {
         this.economyManager = economyManager;
         this.scoreboardManager = scoreboardManager;
+        this.customInventoryManager = customInventoryManager;
     }
 
     @Override
@@ -32,6 +36,10 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
                 double balance = economyManager.getPlayerBalanceByUUID(sender.getUniqueId());
                 sender.sendMessage("Your balance is " + balance + ".");
                 return true;
+            }
+
+            if (args.length == 1 && args[0].equalsIgnoreCase("test")) {
+                customInventoryManager.openInventory(sender, new ObjectId("64eba7ce21280a946df59bd5"));
             }
 
             if (args.length == 3 && args[0].equalsIgnoreCase("set")) {

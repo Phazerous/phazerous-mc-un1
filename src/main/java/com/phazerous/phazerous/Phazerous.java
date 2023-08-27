@@ -1,6 +1,7 @@
 package com.phazerous.phazerous;
 
 import com.phazerous.phazerous.commands.CommandExecutor;
+import com.phazerous.phazerous.gui.CustomInventoryManager;
 import com.phazerous.phazerous.listeners.PlayerInteractAtEntityListener;
 import com.phazerous.phazerous.listeners.PlayerJoinListener;
 import com.phazerous.phazerous.managers.*;
@@ -37,9 +38,10 @@ public class Phazerous extends JavaPlugin implements Listener {
 
         EconomyManager economyManager = new EconomyManager(dbManager);
         ScoreboardManager scoreboardManager = new ScoreboardManager(economyManager);
+        CustomInventoryManager customInventoryManager = new CustomInventoryManager(dbManager, itemManager);
 
         initializeListeners(gatheringManager, economyManager, scoreboardManager);
-        registerCommands(economyManager, scoreboardManager);
+        registerCommands(economyManager, scoreboardManager, customInventoryManager);
     }
 
     private void initializeListeners(GatheringManager gatheringManager, EconomyManager economyManager, ScoreboardManager scoreboardManager) {
@@ -57,8 +59,8 @@ public class Phazerous extends JavaPlugin implements Listener {
         }
     }
 
-    private void registerCommands(EconomyManager economyManager, ScoreboardManager scoreboardManager) {
-        getCommand("bal").setExecutor(new CommandExecutor(economyManager, scoreboardManager));
+    private void registerCommands(EconomyManager economyManager, ScoreboardManager scoreboardManager, CustomInventoryManager customInventoryManager) {
+        getCommand("bal").setExecutor(new CommandExecutor(economyManager, scoreboardManager, customInventoryManager));
     }
 
     @Override
