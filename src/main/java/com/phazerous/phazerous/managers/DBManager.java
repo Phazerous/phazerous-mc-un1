@@ -139,7 +139,7 @@ public class DBManager {
                 .first();
     }
 
-    public void setPlayerBalance(UUID playerUUID, float balance) {
+    public void setPlayerBalance(UUID playerUUID, double balance) {
         Document query = new Document("playerUUID", playerUUID);
         Document update = new Document("$set", new Document("balance", balance));
 

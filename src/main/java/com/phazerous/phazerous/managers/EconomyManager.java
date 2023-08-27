@@ -18,8 +18,9 @@ public class EconomyManager {
         return playerBalanceDto.getBalance();
     }
 
-    public void setPlayerBalance(UUID playerUUID) {
-        dbManager.setPlayerBalance(playerUUID, 0);
+    public boolean setPlayerBalance(UUID playerUUID, double balance) {
+        dbManager.setPlayerBalance(playerUUID, balance);
+        return true;
     }
 
     public void validatePlayerBalance(UUID playerUUID) {

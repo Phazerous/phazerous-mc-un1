@@ -3,3 +3,13 @@ version: 0.1
 author: Phazerous
 main: com.phazerous.phazerous.Phazerous
 api-version: 1.8
+commands:
+  bal:
+    description: Check your balance
+    usage: /<command>
+    aliases: [balance]
+    subcommands:
+      set:
+        description: Pay another player
+        usage: /<command> set <player> <amount>
+        aliases: [set]
