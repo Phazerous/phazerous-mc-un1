@@ -1,8 +1,9 @@
-package com.phazerous.phazerous;
+package com.phazerous.phazerous.managers;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
+import com.phazerous.phazerous.enums.CollectionType;
 import com.phazerous.phazerous.dtos.*;
 import org.bson.Document;
 import org.bson.UuidRepresentation;
@@ -44,7 +45,8 @@ public class DBManager {
 
     private <T> MongoCollection<T> getCollection(Class<T> collectionClass) {
         if (!collections.containsKey(collectionClass)) {
-            String collectionName = CollectionType.getCollectionTypeByClass(collectionClass)
+            String collectionName = CollectionType
+                    .getCollectionTypeByClass(collectionClass)
                     .getCollectionName();
             MongoCollection<T> collection = database.getCollection(collectionName, collectionClass);
 
@@ -128,6 +130,28 @@ public class DBManager {
 
         return getCollection(RuntimeEntityDto.class).find(query)
                 .first();
+    }
+
+    public PlayerBalanceDto getPlayerBalanceDtoByUUID(UUID playerUUID) {
+        Document query = new Document("playerUUID", playerUUID);
+
+        return getCollection(PlayerBalanceDto.class).find(query)
+                .first();
+    }
+
+    public void setPlayerBalance(UUID playerUUID, float balance) {
+        Document query = new Document("playerUUID", playerUUID);
+        Document update = new Document("$set", new Document("balance", balance));
+
+        getCollection(PlayerBalanceDto.class).updateOne(query, update);
+    }
+
+    public void createPlayerBalance(UUID playerUUID) {
+        PlayerBalanceDto playerBalanceDto = new PlayerBalanceDto();
+        playerBalanceDto.setPlayerUUID(playerUUID);
+        playerBalanceDto.setBalance(0);
+
+        getCollection(PlayerBalanceDto.class).insertOne(playerBalanceDto);
     }
 
     public void close() {

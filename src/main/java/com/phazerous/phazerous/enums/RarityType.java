@@ -1,4 +1,4 @@
-package com.phazerous.phazerous;
+package com.phazerous.phazerous.enums;
 
 import lombok.Getter;
 

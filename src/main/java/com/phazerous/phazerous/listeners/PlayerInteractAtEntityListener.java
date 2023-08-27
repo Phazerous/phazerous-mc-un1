@@ -1,5 +1,7 @@
-package com.phazerous.phazerous;
+package com.phazerous.phazerous.listeners;
 
+import com.phazerous.phazerous.managers.EntityManager;
+import com.phazerous.phazerous.managers.GatheringManager;
 import com.phazerous.phazerous.dtos.EntityDto;
 import com.phazerous.phazerous.dtos.LocationedEntityDto;
 import com.phazerous.phazerous.dtos.RuntimeEntityDto;
@@ -12,11 +14,11 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 public class PlayerInteractAtEntityListener implements Listener {
 
     private final EntityManager entityManager;
-    private final GatheringUtils gatheringUtils;
+    private final GatheringManager gatheringManager;
 
-    public PlayerInteractAtEntityListener(EntityManager entityManager, GatheringUtils gatheringUtils) {
+    public PlayerInteractAtEntityListener(EntityManager entityManager, GatheringManager gatheringManager) {
         this.entityManager = entityManager;
-        this.gatheringUtils = gatheringUtils;
+        this.gatheringManager = gatheringManager;
     }
 
     @EventHandler
@@ -29,7 +31,7 @@ public class PlayerInteractAtEntityListener implements Listener {
         EntityDto entityDto = entityManager.getEntityDtoById(locationedEntityDto.getEntityId());
 
         if (entityDto.getType() == 0) {
-            gatheringUtils.gather(locationedEntityDto, entityDto, player, entity, runtimeEntityDto);
+            gatheringManager.gather(locationedEntityDto, entityDto, player, entity, runtimeEntityDto);
         }
 
     }

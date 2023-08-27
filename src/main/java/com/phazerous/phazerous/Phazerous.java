@@ -1,9 +1,15 @@
 package com.phazerous.phazerous;
 
+import com.phazerous.phazerous.listeners.PlayerInteractAtEntityListener;
+import com.phazerous.phazerous.listeners.PlayerJoinListener;
+import com.phazerous.phazerous.managers.*;
+import com.phazerous.phazerous.utils.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
+
+import java.util.ArrayList;
 
 public class Phazerous extends JavaPlugin implements Listener {
     private EntityManager entityManager;
@@ -26,10 +32,26 @@ public class Phazerous extends JavaPlugin implements Listener {
         ItemManager itemManager = new ItemManager(dbManager);
 
         Scheduler scheduler = new Scheduler(Bukkit.getScheduler(), this);
-        GatheringUtils gatheringUtils = new GatheringUtils(scheduler, entityManager, itemManager);
+        GatheringManager gatheringManager = new GatheringManager(scheduler, entityManager, itemManager);
 
-        PlayerInteractAtEntityListener playerInteractAtEntityListener = new PlayerInteractAtEntityListener(entityManager, gatheringUtils);
-        getServer().getPluginManager().registerEvents(playerInteractAtEntityListener, this);
+        EconomyManager economyManager = new EconomyManager(dbManager);
+
+        initializeListeners(gatheringManager, economyManager);
+    }
+
+    private void initializeListeners(GatheringManager gatheringManager, EconomyManager economyManager) {
+        PlayerInteractAtEntityListener playerInteractAtEntityListener = new PlayerInteractAtEntityListener(entityManager, gatheringManager);
+        PlayerJoinListener playerJoinListener = new PlayerJoinListener(economyManager);
+
+        ArrayList<Listener> listeners = new ArrayList<>();
+        listeners.add(playerInteractAtEntityListener);
+        listeners.add(playerJoinListener);
+
+        PluginManager pluginManager = getServer().getPluginManager();
+
+        for (Listener listener : listeners) {
+            pluginManager.registerEvents(listener, this);
+        }
     }
 
     @Override

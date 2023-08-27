@@ -1,5 +1,6 @@
-package com.phazerous.phazerous;
+package com.phazerous.phazerous.managers;
 
+import com.phazerous.phazerous.utils.Scheduler;
 import com.phazerous.phazerous.dtos.EntityDto;
 import com.phazerous.phazerous.dtos.LocationedEntityDto;
 import com.phazerous.phazerous.dtos.RuntimeEntityDto;
@@ -9,12 +10,11 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GatheringUtils {
+public class GatheringManager {
     private final String PREFIX = "[";
     private final String PREFIX_COLOR = "§6";
 
@@ -31,7 +31,7 @@ public class GatheringUtils {
     private final EntityManager entityManager;
     private final ItemManager itemManager;
 
-    public GatheringUtils(Scheduler scheduler, EntityManager entityManager, ItemManager itemManager) {
+    public GatheringManager(Scheduler scheduler, EntityManager entityManager, ItemManager itemManager) {
         this.scheduler = scheduler;
         this.entityManager = entityManager;
         this.itemManager = itemManager;

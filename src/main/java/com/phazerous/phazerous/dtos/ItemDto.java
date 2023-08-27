@@ -1,6 +1,6 @@
 package com.phazerous.phazerous.dtos;
 
-import com.phazerous.phazerous.RarityType;
+import com.phazerous.phazerous.enums.RarityType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

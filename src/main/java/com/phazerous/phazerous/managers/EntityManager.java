@@ -1,4 +1,4 @@
-package com.phazerous.phazerous;
+package com.phazerous.phazerous.managers;
 
 import com.phazerous.phazerous.dtos.EntityDto;
 import com.phazerous.phazerous.dtos.LocationedEntityDto;

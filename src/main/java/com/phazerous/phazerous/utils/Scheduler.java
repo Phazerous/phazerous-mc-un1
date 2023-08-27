@@ -1,6 +1,7 @@
-package com.phazerous.phazerous;
+package com.phazerous.phazerous.utils;
 
 import com.phazerous.phazerous.dtos.LocationedEntityDto;
+import com.phazerous.phazerous.managers.EntityManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -27,7 +28,8 @@ public class Scheduler {
     }
 
     public void scheduleEntityRespawn(LocationedEntityDto locationedEntityDto, long respawnTime) {
-        runTaskLater(() -> EntityManager.getInstance().respawnEntity(locationedEntityDto), respawnTime);
+        runTaskLater(() -> EntityManager
+                .getInstance().respawnEntity(locationedEntityDto), respawnTime);
     }
 
     public void cancelTask(int taskId) {

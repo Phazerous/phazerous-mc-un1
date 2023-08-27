@@ -1,5 +1,6 @@
-package com.phazerous.phazerous.dtos;
+package com.phazerous.phazerous.enums;
 
+import com.phazerous.phazerous.dtos.*;
 import lombok.Getter;
 
 @Getter
@@ -7,7 +8,8 @@ public enum CollectionType {
     LOCATIONED_ENTITY("locationed_entities"),
     ENTITY("entities"),
     ITEM("items"),
-    RUNTIME_ENTITY("runtime_entities");
+    RUNTIME_ENTITY("runtime_entities"),
+    PLAYER_BALANCE("player_balances");
 
     private final String collectionName;
 
@@ -24,6 +26,8 @@ public enum CollectionType {
             return ITEM;
         } else if (clazz == RuntimeEntityDto.class) {
             return RUNTIME_ENTITY;
+        } else if (clazz == PlayerBalanceDto.class) {
+            return PLAYER_BALANCE;
         }
 
         return null;
