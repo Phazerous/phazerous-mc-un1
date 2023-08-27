@@ -1,5 +1,7 @@
 package com.phazerous.phazerous.dtos;
 
+import com.phazerous.phazerous.RarityType;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
@@ -11,4 +13,11 @@ public class ItemDto {
     private String title;
     private byte type;
     private int materialType;
+
+    @Getter(AccessLevel.NONE)
+    private int rarity;
+
+    public RarityType getRarityType() {
+        return RarityType.getRarityTypeByValue(rarity);
+    }
 }

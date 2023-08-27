@@ -2,10 +2,12 @@ package com.phazerous.phazerous;
 
 import com.phazerous.phazerous.dtos.ItemDto;
 import org.bson.types.ObjectId;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +31,16 @@ public class ItemManager {
             ItemStack itemStack = new ItemStack(material, 1);
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            itemMeta.setDisplayName(title);
+
+            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('§', "§r" + title));
+            List<String> itemLore =  itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
+
+            RarityType rarityType = itemDto.getRarityType();
+            String rarityLine = prepareRarityLine(rarityType);
+            itemLore.add(rarityLine);
+
+            itemMeta.setLore(itemLore);
+
             itemStack.setItemMeta(itemMeta);
 
             itemsHashmap.put(itemId, itemStack);
@@ -42,5 +53,11 @@ public class ItemManager {
         return itemIds.stream()
                 .map(this::getItemById)
                 .collect(Collectors.toList());
+    }
+
+    private String prepareRarityLine(RarityType rarityType) {
+        String unformattedString = rarityType.getColor() + "§l" + rarityType.getTitle();
+
+        return ChatColor.translateAlternateColorCodes('§', unformattedString);
     }
 }
