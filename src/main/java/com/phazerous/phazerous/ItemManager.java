@@ -31,33 +31,35 @@ public class ItemManager {
             ItemStack itemStack = new ItemStack(material, 1);
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-
-            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('§', "§r" + title));
-            List<String> itemLore =  itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
-
-            RarityType rarityType = itemDto.getRarityType();
-            String rarityLine = prepareRarityLine(rarityType);
-            itemLore.add(rarityLine);
-
-            itemMeta.setLore(itemLore);
-
+            setItemDescription(itemMeta, title, itemDto.getRarityType());
             itemStack.setItemMeta(itemMeta);
 
             itemsHashmap.put(itemId, itemStack);
         }
 
-        return itemsHashmap.get(itemId).clone();
+        return itemsHashmap
+                .get(itemId)
+                .clone();
     }
 
     public List<ItemStack> getItemsByIds(List<ObjectId> itemIds) {
-        return itemIds.stream()
+        return itemIds
+                .stream()
                 .map(this::getItemById)
                 .collect(Collectors.toList());
     }
 
-    private String prepareRarityLine(RarityType rarityType) {
-        String unformattedString = rarityType.getColor() + "§l" + rarityType.getTitle();
+    private void setItemDescription(ItemMeta itemMeta, String title, RarityType rarityType) {
+        String color = rarityType.getColor();
 
-        return ChatColor.translateAlternateColorCodes('§', unformattedString);
+        String formattedTitle = ChatColor.translateAlternateColorCodes('§', "§r" + color + title);
+        String formattedRarity = ChatColor.translateAlternateColorCodes('§', "§r§l" + color + rarityType.getTitle());
+
+        itemMeta.setDisplayName(formattedTitle);
+
+        List<String> itemLore = itemMeta.hasLore() ? itemMeta.getLore() : new ArrayList<>();
+        itemLore.add(formattedRarity);
+
+        itemMeta.setLore(itemLore);
     }
 }

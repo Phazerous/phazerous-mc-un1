@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum RarityType {
     COMMON(0, "COMMON", "§f"),
-    UNCOMMON(1, "UNCOMMON", "§2"),
+    UNCOMMON(1, "UNCOMMON", "§a"),
     RARE(2, "RARE", "§9"),
     EPIC(3, "EPIC", "§5"),
     LEGENDARY(4, "LEGENDARY", "§6");
