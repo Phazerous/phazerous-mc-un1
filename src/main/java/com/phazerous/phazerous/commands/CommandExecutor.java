@@ -1,6 +1,7 @@
 package com.phazerous.phazerous.commands;
 
 import com.phazerous.phazerous.managers.EconomyManager;
+import com.phazerous.phazerous.managers.ScoreboardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -8,9 +9,11 @@ import org.bukkit.entity.Player;
 
 public class CommandExecutor implements org.bukkit.command.CommandExecutor {
     private final EconomyManager economyManager;
+    private final ScoreboardManager scoreboardManager;
 
-    public CommandExecutor(EconomyManager economyManager) {
+    public CommandExecutor(EconomyManager economyManager, ScoreboardManager scoreboardManager) {
         this.economyManager = economyManager;
+        this.scoreboardManager = scoreboardManager;
     }
 
     @Override
@@ -45,6 +48,7 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
                     if (economyManager.setPlayerBalance(player.getUniqueId(), amount)) {
                         commandSender.sendMessage("Successfully set " + playerName + "'s balance to " + amount + ".");
                         player.sendMessage("Your balance has been set to " + amount + ".");
+                        scoreboardManager.updateBalance(player.getUniqueId(), amount);
                     }
                 } catch (Exception e) {
                     commandSender.sendMessage("Invalid arguments.");

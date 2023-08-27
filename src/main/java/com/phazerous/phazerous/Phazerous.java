@@ -36,14 +36,15 @@ public class Phazerous extends JavaPlugin implements Listener {
         GatheringManager gatheringManager = new GatheringManager(scheduler, entityManager, itemManager);
 
         EconomyManager economyManager = new EconomyManager(dbManager);
+        ScoreboardManager scoreboardManager = new ScoreboardManager(economyManager);
 
-        initializeListeners(gatheringManager, economyManager);
-        registerCommands(economyManager);
+        initializeListeners(gatheringManager, economyManager, scoreboardManager);
+        registerCommands(economyManager, scoreboardManager);
     }
 
-    private void initializeListeners(GatheringManager gatheringManager, EconomyManager economyManager) {
+    private void initializeListeners(GatheringManager gatheringManager, EconomyManager economyManager, ScoreboardManager scoreboardManager) {
         PlayerInteractAtEntityListener playerInteractAtEntityListener = new PlayerInteractAtEntityListener(entityManager, gatheringManager);
-        PlayerJoinListener playerJoinListener = new PlayerJoinListener(economyManager);
+        PlayerJoinListener playerJoinListener = new PlayerJoinListener(economyManager, scoreboardManager);
 
         ArrayList<Listener> listeners = new ArrayList<>();
         listeners.add(playerInteractAtEntityListener);
@@ -56,8 +57,8 @@ public class Phazerous extends JavaPlugin implements Listener {
         }
     }
 
-    private void registerCommands(EconomyManager economyManager) {
-        getCommand("bal").setExecutor(new CommandExecutor(economyManager));
+    private void registerCommands(EconomyManager economyManager, ScoreboardManager scoreboardManager) {
+        getCommand("bal").setExecutor(new CommandExecutor(economyManager, scoreboardManager));
     }
 
     @Override
