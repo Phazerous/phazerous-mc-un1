@@ -3,20 +3,13 @@ package com.phazerous.phazerous;
 import com.phazerous.phazerous.dtos.EntityDto;
 import com.phazerous.phazerous.dtos.LocationedEntityDto;
 import com.phazerous.phazerous.dtos.RuntimeEntityDto;
-import de.tr7zw.nbtapi.NBTEntity;
-import de.tr7zw.nbtapi.NBTItem;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bson.types.ObjectId;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftArmorStand;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import io.github.bananapuncher714.nbteditor.NBTEditor;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,6 +117,8 @@ public class EntityManager {
         armorStand.setSmall(true);
         armorStand.setVisible(true);
 
+        setEntityPersistenceRequired(armorStand);
+
         return armorStand.getUniqueId();
     }
 
@@ -161,6 +156,16 @@ public class EntityManager {
         double z = locationedEntityDto.getZ();
 
         return new Location(world, x, y, z);
+    }
+
+    private void setEntityPersistenceRequired(Entity entity) {
+        net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity) entity).getHandle();
+        NBTTagCompound tag = new NBTTagCompound();
+        nmsEntity.c(tag);
+
+        tag.setByte("PersistenceRequired", (byte) 1);
+
+        nmsEntity.f(tag);
     }
 
     public static EntityManager getInstance() {
