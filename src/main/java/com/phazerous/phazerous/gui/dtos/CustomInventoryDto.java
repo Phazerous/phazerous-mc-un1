@@ -1,4 +1,4 @@
-package com.phazerous.phazerous.dtos;
+package com.phazerous.phazerous.gui.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,6 @@ import java.util.List;
 
 @Getter @Setter
 public class CustomInventoryDto {
-    private ObjectId id;
     private String title;
     private int size;
     private List<CustomInventoryItemDto> contents;

@@ -1,6 +1,9 @@
-package com.phazerous.phazerous.enums;
+package com.phazerous.phazerous.db;
 
 import com.phazerous.phazerous.dtos.*;
+import com.phazerous.phazerous.gui.actions.dtos.CustomInventoryActionDto;
+import com.phazerous.phazerous.gui.dtos.CustomInventoryDto;
+import com.phazerous.phazerous.gui.dtos.CustomInventoryItemDto;
 import lombok.Getter;
 
 @Getter
@@ -10,7 +13,8 @@ public enum CollectionType {
     ITEM("items"),
     RUNTIME_ENTITY("runtime_entities"),
     PLAYER_BALANCE("player_balances"),
-    CUSTOM_INVENTORY("custom_inventories");
+    CUSTOM_INVENTORY("custom_inventories"),
+    CUSTOM_INVENTORY_ACTIONS("custom_inventory_actions");
 
     private final String collectionName;
 
@@ -31,6 +35,8 @@ public enum CollectionType {
             return PLAYER_BALANCE;
         } else if (clazz == CustomInventoryDto.class) {
             return CUSTOM_INVENTORY;
+        } else if (clazz == CustomInventoryActionDto.class) {
+            return CUSTOM_INVENTORY_ACTIONS;
         }
 
         return null;

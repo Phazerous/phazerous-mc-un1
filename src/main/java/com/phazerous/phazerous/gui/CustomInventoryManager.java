@@ -1,7 +1,8 @@
 package com.phazerous.phazerous.gui;
 
-import com.phazerous.phazerous.dtos.CustomInventoryDto;
-import com.phazerous.phazerous.managers.DBManager;
+import com.phazerous.phazerous.gui.dtos.CustomInventoryDto;
+import com.phazerous.phazerous.gui.dtos.CustomInventoryItemDto;
+import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.managers.ItemManager;
 import org.bson.types.ObjectId;
 import org.bukkit.entity.Player;
@@ -17,6 +18,7 @@ public class CustomInventoryManager {
     private final ItemManager itemManager;
     private final HashMap<ObjectId, Inventory> inventories = new HashMap<>();
 
+
     public CustomInventoryManager(DBManager dbManager, ItemManager itemManager) {
         this.dbManager = dbManager;
         this.itemManager = itemManager;
@@ -25,22 +27,33 @@ public class CustomInventoryManager {
     private void createInventory(ObjectId inventoryId) {
         CustomInventoryDto inventoryDto = dbManager.getCustomInventoryDtoById(inventoryId);
 
-        List<CustomInventoryItem> contents = inventoryDto
-                .getContents()
+        List<CustomInventoryItemDto> contentDtos = inventoryDto.getContents();
+        int size = inventoryDto.getSize();
+        String title = inventoryDto.getTitle();
+
+        List<CustomInventoryItem> contents = getCustomInventoryItems(contentDtos);
+        CustomInventory customInventory = new CustomInventory(size, title);
+        customInventory.setContents(contents);
+        Inventory inventory = customInventory.getInventory();
+
+        inventories.put(inventoryId, inventory);
+    }
+
+    private List<CustomInventoryItem> getCustomInventoryItems(List<CustomInventoryItemDto> itemDtos) {
+        return itemDtos
                 .stream()
                 .map(it -> {
                     List<Integer> slots = it.getSlots();
                     ItemStack itemStack = itemManager.getItemById(it.getItemId());
 
-                    return new CustomInventoryItem(itemStack, slots);
+                    ObjectId actionId = it.getActionId();
+                    String actionIdString = null;
+
+                    if (actionId != null) actionIdString = actionId.toHexString();
+
+                    return new CustomInventoryItem(itemStack, slots, actionIdString);
                 })
                 .collect(Collectors.toList());
-
-        CustomInventory customInventory = new CustomInventory(inventoryDto.getSize(), inventoryDto.getTitle());
-        customInventory.setContents(contents);
-        Inventory inventory = customInventory.getInventory();
-
-        inventories.put(inventoryId, inventory);
     }
 
     private Inventory getOrCreateInventory(ObjectId inventoryId) {

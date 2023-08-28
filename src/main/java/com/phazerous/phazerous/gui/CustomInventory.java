@@ -1,8 +1,10 @@
 package com.phazerous.phazerous.gui;
 
+import com.phazerous.phazerous.utils.NBTEditor;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
@@ -17,9 +19,16 @@ public class CustomInventory {
     public void setContents(List<CustomInventoryItem> contents) {
         for (CustomInventoryItem item : contents) {
             for (Integer slot : item.getSlots()) {
-                inventory.setItem(slot, item.getItem());
+                ItemStack preparedItem = prepareItem(item.getItem(), item.getActionId());
+                inventory.setItem(slot, preparedItem);
             }
         }
+    }
+
+    private ItemStack prepareItem(ItemStack item, String actionId) {
+        if (actionId == null) return item;
+
+        return NBTEditor.setString(item, GUISharedConstants.ACTION_ID_NAME, actionId);
     }
 
 }

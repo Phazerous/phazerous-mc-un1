@@ -1,7 +1,7 @@
 package com.phazerous.phazerous.managers;
 
 import com.phazerous.phazerous.dtos.PlayerBalanceDto;
-import com.phazerous.phazerous.managers.DBManager;
+import com.phazerous.phazerous.db.DBManager;
 
 import java.util.UUID;
 
@@ -16,6 +16,18 @@ public class EconomyManager {
         PlayerBalanceDto playerBalanceDto = dbManager.getPlayerBalanceDtoByUUID(uuid);
 
         return playerBalanceDto.getBalance();
+    }
+
+    public boolean withdraw(UUID playerUUID, double amount) {
+        PlayerBalanceDto playerBalanceDto = dbManager.getPlayerBalanceDtoByUUID(playerUUID);
+        double balance = playerBalanceDto.getBalance();
+
+        if (balance < amount) {
+            return false;
+        }
+
+        dbManager.setPlayerBalance(playerUUID, balance - amount);
+        return true;
     }
 
     public boolean setPlayerBalance(UUID playerUUID, double balance) {

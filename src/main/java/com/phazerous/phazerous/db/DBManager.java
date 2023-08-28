@@ -1,10 +1,11 @@
-package com.phazerous.phazerous.managers;
+package com.phazerous.phazerous.db;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
-import com.phazerous.phazerous.enums.CollectionType;
 import com.phazerous.phazerous.dtos.*;
+import com.phazerous.phazerous.gui.actions.dtos.CustomInventoryActionDto;
+import com.phazerous.phazerous.gui.dtos.CustomInventoryDto;
 import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -136,6 +137,13 @@ public class DBManager {
         Document query = new Document("playerUUID", playerUUID);
 
         return getCollection(PlayerBalanceDto.class).find(query)
+                .first();
+    }
+
+    public CustomInventoryActionDto getCustomInventoryActionByID(ObjectId id) {
+        Document query = new Document("_id", id);
+
+        return getCollection(CustomInventoryActionDto.class).find(query)
                 .first();
     }
 

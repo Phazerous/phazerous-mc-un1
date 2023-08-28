@@ -1,5 +1,6 @@
 package com.phazerous.phazerous.managers;
 
+import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.dtos.EntityDto;
 import com.phazerous.phazerous.dtos.LocationedEntityDto;
 import com.phazerous.phazerous.dtos.RuntimeEntityDto;

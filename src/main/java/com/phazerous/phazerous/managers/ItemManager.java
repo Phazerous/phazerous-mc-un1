@@ -2,7 +2,7 @@ package com.phazerous.phazerous.managers;
 
 import com.phazerous.phazerous.dtos.ItemDto;
 import com.phazerous.phazerous.enums.RarityType;
-import com.phazerous.phazerous.managers.DBManager;
+import com.phazerous.phazerous.db.DBManager;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

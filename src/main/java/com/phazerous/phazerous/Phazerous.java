@@ -1,7 +1,9 @@
 package com.phazerous.phazerous;
 
 import com.phazerous.phazerous.commands.CommandExecutor;
+import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.gui.CustomInventoryManager;
+import com.phazerous.phazerous.gui.actions.CustomInventoryActionManager;
 import com.phazerous.phazerous.listeners.InventoryClickListener;
 import com.phazerous.phazerous.listeners.PlayerInteractAtEntityListener;
 import com.phazerous.phazerous.listeners.PlayerJoinListener;
@@ -40,15 +42,16 @@ public class Phazerous extends JavaPlugin implements Listener {
         EconomyManager economyManager = new EconomyManager(dbManager);
         ScoreboardManager scoreboardManager = new ScoreboardManager(economyManager);
         CustomInventoryManager customInventoryManager = new CustomInventoryManager(dbManager, itemManager);
+        CustomInventoryActionManager customInventoryActionManager = new CustomInventoryActionManager(dbManager, economyManager, itemManager);
 
-        initializeListeners(gatheringManager, economyManager, scoreboardManager, customInventoryManager);
+        initializeListeners(gatheringManager, economyManager, scoreboardManager, customInventoryManager, customInventoryActionManager);
         registerCommands(economyManager, scoreboardManager, customInventoryManager);
     }
 
-    private void initializeListeners(GatheringManager gatheringManager, EconomyManager economyManager, ScoreboardManager scoreboardManager, CustomInventoryManager customInventoryManager) {
+    private void initializeListeners(GatheringManager gatheringManager, EconomyManager economyManager, ScoreboardManager scoreboardManager, CustomInventoryManager customInventoryManager, CustomInventoryActionManager customInventoryActionManager) {
         PlayerInteractAtEntityListener playerInteractAtEntityListener = new PlayerInteractAtEntityListener(entityManager, gatheringManager);
         PlayerJoinListener playerJoinListener = new PlayerJoinListener(economyManager, scoreboardManager);
-        InventoryClickListener inventoryClickListener = new InventoryClickListener(customInventoryManager);
+        InventoryClickListener inventoryClickListener = new InventoryClickListener(customInventoryManager, customInventoryActionManager);
 
         ArrayList<Listener> listeners = new ArrayList<>();
         listeners.add(playerInteractAtEntityListener);
