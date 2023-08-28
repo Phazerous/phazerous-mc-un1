@@ -54,4 +54,15 @@ public class CustomInventoryManager {
         Inventory inventory = getOrCreateInventory(inventoryId);
         player.openInventory(inventory);
     }
+
+
+    /**
+     * Checks if the inventory is a custom inventory.
+     *
+     * @param inventory The inventory to check.
+     * @return true if the inventory is a custom inventory, <b>false</b> otherwise.
+     */
+    public boolean isCustomInventory(Inventory inventory) {
+        return inventories.containsValue(inventory);
+    }
 }
