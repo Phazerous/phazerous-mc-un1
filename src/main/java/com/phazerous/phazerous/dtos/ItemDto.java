@@ -13,6 +13,7 @@ public class ItemDto {
     private String title;
     private byte type;
     private int materialType;
+    private byte additionalMaterialType;
 
     @Getter(AccessLevel.NONE)
     private int rarity;

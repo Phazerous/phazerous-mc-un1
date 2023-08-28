@@ -29,8 +29,9 @@ public class ItemManager {
 
             String title = itemDto.getTitle();
             Material material = Material.getMaterial(itemDto.getMaterialType());
+            byte additionalMaterialType = itemDto.getAdditionalMaterialType();
 
-            ItemStack itemStack = new ItemStack(material, 1);
+            ItemStack itemStack = additionalMaterialType == 0 ? new ItemStack(material) : new ItemStack(material, 1, additionalMaterialType);
 
             ItemMeta itemMeta = itemStack.getItemMeta();
             setItemDescription(itemMeta, title, itemDto.getRarityType());
