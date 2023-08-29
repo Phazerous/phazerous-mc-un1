@@ -21,7 +21,7 @@ public class GatheringManager {
     private final String POSTFIX = "]";
     private final String POSTFIX_COLOR = "§6";
 
-    private final String TITLE = "|||Добыча|||";
+    private final String TITLE = "|||Gather|||";
 
     private final String COLOR_IF_LESS_33 = "§c";
     private final String COLOR_IF_LESS_66 = "§e";

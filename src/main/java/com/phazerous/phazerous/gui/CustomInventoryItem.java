@@ -10,10 +10,12 @@ public class CustomInventoryItem {
     private final ItemStack item;
     private final List<Integer> slots;
     private final String actionId;
+    private final Double price;
 
-    public CustomInventoryItem(ItemStack item, List<Integer> slots, String actionId) {
+    public CustomInventoryItem(ItemStack item, List<Integer> slots, String actionId, Double price) {
         this.item = item;
         this.slots = slots;
         this.actionId = actionId;
+        this.price = price;
     }
 }

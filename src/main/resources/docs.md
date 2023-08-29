@@ -2,7 +2,7 @@
 
 ---
 
-### Custom Inventories
+## Custom Inventories
 
 <ins><b>Collection</b></ins>: custom_inventories
 
@@ -17,7 +17,8 @@
       {
          "itemId": ObjectId;
          "slots": [Number];
-         "actionId: ObjectId; 
+         "actionId: ObjectId;
+         "price": Double;
          }
       }
    ]
@@ -33,7 +34,7 @@ Size must be a multiple of 9 and less or equal than 54.
 
 ---
 
-### Custom Inventory Actions
+## Custom Inventory Actions
 
 <ins><b>Collection</b></ins>: custom_inventory_actions
 
@@ -51,3 +52,6 @@ Action types: `trade`
 ```
 
 Action is executed when the player clicks the item in the [inventory](#custom-inventories).
+
+---
+

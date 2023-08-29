@@ -12,4 +12,5 @@ public class CustomInventoryItemDto {
     private ObjectId itemId;
     private List<Integer> slots;
     private ObjectId actionId;
+    private double price;
 }

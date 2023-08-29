@@ -45,13 +45,15 @@ public class CustomInventoryManager {
                 .map(it -> {
                     List<Integer> slots = it.getSlots();
                     ItemStack itemStack = itemManager.getItemById(it.getItemId());
+                    Double price = it.getPrice();
 
                     ObjectId actionId = it.getActionId();
                     String actionIdString = null;
 
+
                     if (actionId != null) actionIdString = actionId.toHexString();
 
-                    return new CustomInventoryItem(itemStack, slots, actionIdString);
+                    return new CustomInventoryItem(itemStack, slots, actionIdString, price);
                 })
                 .collect(Collectors.toList());
     }
