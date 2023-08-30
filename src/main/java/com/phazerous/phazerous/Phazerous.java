@@ -2,6 +2,7 @@ package com.phazerous.phazerous;
 
 import com.phazerous.phazerous.commands.CommandExecutor;
 import com.phazerous.phazerous.db.DBManager;
+import com.phazerous.phazerous.entities.EntityManager;
 import com.phazerous.phazerous.gui.CustomInventoryManager;
 import com.phazerous.phazerous.gui.actions.CustomInventoryActionManager;
 import com.phazerous.phazerous.listeners.InventoryClickListener;

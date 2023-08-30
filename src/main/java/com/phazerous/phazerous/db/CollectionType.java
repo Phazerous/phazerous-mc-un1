@@ -1,15 +1,16 @@
 package com.phazerous.phazerous.db;
 
 import com.phazerous.phazerous.dtos.*;
+import com.phazerous.phazerous.entities.models.LocationedEntity;
+import com.phazerous.phazerous.entities.models.RuntimeEntity;
 import com.phazerous.phazerous.gui.actions.dtos.CustomInventoryActionDto;
 import com.phazerous.phazerous.gui.dtos.CustomInventoryDto;
-import com.phazerous.phazerous.gui.dtos.CustomInventoryItemDto;
 import lombok.Getter;
 
 @Getter
 public enum CollectionType {
-    LOCATIONED_ENTITY("locationed_entities"),
-    ENTITY("entities"),
+    LOCATIONED_ENTITIES("locationed_entities"),
+    ENTITIES("entities"),
     ITEM("items"),
     RUNTIME_ENTITY("runtime_entities"),
     PLAYER_BALANCE("player_balances"),
@@ -23,13 +24,13 @@ public enum CollectionType {
     }
 
     public static CollectionType getCollectionTypeByClass(Class<?> clazz) {
-        if (clazz == LocationedEntityDto.class) {
-            return LOCATIONED_ENTITY;
+        if (clazz == LocationedEntity.class) {
+            return LOCATIONED_ENTITIES;
         } else if (clazz == EntityDto.class) {
-            return ENTITY;
+            return ENTITIES;
         } else if (clazz == ItemDto.class) {
             return ITEM;
-        } else if (clazz == RuntimeEntityDto.class) {
+        } else if (clazz == RuntimeEntity.class) {
             return RUNTIME_ENTITY;
         } else if (clazz == PlayerBalanceDto.class) {
             return PLAYER_BALANCE;

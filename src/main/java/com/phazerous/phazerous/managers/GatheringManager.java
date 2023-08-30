@@ -1,9 +1,10 @@
 package com.phazerous.phazerous.managers;
 
+import com.phazerous.phazerous.entities.EntityManager;
+import com.phazerous.phazerous.entities.models.GatheringEntity;
+import com.phazerous.phazerous.entities.models.LocationedEntity;
+import com.phazerous.phazerous.entities.models.RuntimeEntity;
 import com.phazerous.phazerous.utils.Scheduler;
-import com.phazerous.phazerous.dtos.EntityDto;
-import com.phazerous.phazerous.dtos.LocationedEntityDto;
-import com.phazerous.phazerous.dtos.RuntimeEntityDto;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -37,9 +38,9 @@ public class GatheringManager {
         this.itemManager = itemManager;
     }
 
-    public void gather(LocationedEntityDto locationedEntityDto, EntityDto entityDto, Player player, Entity entity, RuntimeEntityDto runtimeEntityDto) {
-        long hardness = entityDto.getHardness();
-        List<ObjectId> dropIds = entityDto.getDropsIds();
+    public void gather(LocationedEntity locationedEntity, GatheringEntity gatheringEntity, Player player, Entity entity, RuntimeEntity runtimeEntity) {
+        long hardness = gatheringEntity.getHardness();
+        List<ObjectId> dropIds = gatheringEntity.getDropsIds();
 
         AtomicInteger secondsCounter = new AtomicInteger();
 
@@ -57,9 +58,9 @@ public class GatheringManager {
         int finishGatherId = scheduler.runTaskLater(() -> {
             player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 5, 5);
             scheduler.cancelTask(gatherIntervalId);
-            entityManager.removeEntity(entity, runtimeEntityDto);
+            entityManager.removeEntity(entity, runtimeEntity);
 
-            scheduler.scheduleEntityRespawn(locationedEntityDto, entityDto.getRespawnTime());
+            scheduler.scheduleEntityRespawn(locationedEntity, gatheringEntity.getRespawnTime());
 
             if (dropIds == null) return;
 
