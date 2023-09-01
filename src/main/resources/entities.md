@@ -17,7 +17,7 @@ creatures, personalized armor stands, bosses, and more.
    "title": String;
    "entityType": Int32;
    "respawnTime": Int64;
-   "dropsIds": [ObjectId];
+   "drops": [EntityDrop];
 }
 ```
 
@@ -45,4 +45,23 @@ creatures, personalized armor stands, bosses, and more.
 }
 ```
 
+<br />
+<br />
+<br />
+
+## Schemas
+
 ---
+
+### EntityDrop
+
+```
+{
+   "dropChance": Double;
+   "itemId": ObjectId;
+}
+```
+
+- The dropChance is a value between 0 and 1, where 0 is 0% and 1 is 100%.
+
+- If the dropChance not provided, then the item will be drop 100% of the time.

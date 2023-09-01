@@ -1,10 +1,11 @@
-package com.phazerous.phazerous.entities.models;
+package com.phazerous.phazerous.entities.models.entities;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
 
-@Getter @Setter
+@Getter
+@Setter
 public class LocationedEntity {
     private ObjectId _id;
 

@@ -1,8 +1,8 @@
 package com.phazerous.phazerous.db;
 
 import com.phazerous.phazerous.economy.models.PlayerBalance;
-import com.phazerous.phazerous.entities.models.BaseEntity;
-import com.phazerous.phazerous.entities.models.LocationedEntity;
+import com.phazerous.phazerous.entities.models.entities.BaseEntity;
+import com.phazerous.phazerous.entities.models.entities.LocationedEntity;
 import com.phazerous.phazerous.entities.models.runtime.RuntimeBaseEntity;
 import com.phazerous.phazerous.gui.actions.dtos.CustomInventoryActionDto;
 import com.phazerous.phazerous.gui.dtos.CustomInventoryDto;

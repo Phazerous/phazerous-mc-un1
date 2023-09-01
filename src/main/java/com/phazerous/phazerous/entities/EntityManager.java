@@ -6,7 +6,10 @@ import com.phazerous.phazerous.db.CollectionType;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.db.utils.DocumentBuilder;
 import com.phazerous.phazerous.db.utils.DocumentParser;
-import com.phazerous.phazerous.entities.models.*;
+import com.phazerous.phazerous.entities.models.entities.BaseEntity;
+import com.phazerous.phazerous.entities.models.entities.GatheringEntity;
+import com.phazerous.phazerous.entities.models.entities.LocationedEntity;
+import com.phazerous.phazerous.entities.models.entities.MobEntity;
 import com.phazerous.phazerous.entities.models.runtime.RuntimeBaseEntity;
 import com.phazerous.phazerous.entities.models.runtime.RuntimeGatheringEntity;
 import com.phazerous.phazerous.entities.models.runtime.RuntimeMobEntity;
@@ -15,9 +18,12 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -157,8 +163,14 @@ public class EntityManager {
 
         NBTEditor.setEntityPersistenceRequired(mob);
 
-        UUID uuid = mob.getUniqueId();
 
+        if (mob instanceof LivingEntity) {
+            ((LivingEntity) mob)
+                    .getEquipment()
+                    .setHelmet(new ItemStack(Material.STONE_BUTTON));
+        }
+
+        UUID uuid = mob.getUniqueId();
 
         RuntimeMobEntity mobRuntimeEntity = new RuntimeMobEntity();
         mobRuntimeEntity.setUuid(uuid);

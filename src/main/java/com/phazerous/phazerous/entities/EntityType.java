@@ -1,6 +1,8 @@
 package com.phazerous.phazerous.entities;
 
-import com.phazerous.phazerous.entities.models.*;
+import com.phazerous.phazerous.entities.models.entities.BaseEntity;
+import com.phazerous.phazerous.entities.models.entities.GatheringEntity;
+import com.phazerous.phazerous.entities.models.entities.MobEntity;
 import com.phazerous.phazerous.entities.models.runtime.RuntimeBaseEntity;
 import com.phazerous.phazerous.entities.models.runtime.RuntimeGatheringEntity;
 import com.phazerous.phazerous.entities.models.runtime.RuntimeMobEntity;
