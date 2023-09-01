@@ -13,6 +13,7 @@ import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class DBManager {
                 .first();
     }
 
-    public Document getDocument(Document query, CollectionType collectionType) {
+    public Document getDocument(Bson query, CollectionType collectionType) {
         String collectionName = collectionType.getCollectionName();
 
         return getCollection(collectionName)
@@ -107,6 +108,16 @@ public class DBManager {
         MongoCollection<Document> collection = getCollection(collectionName);
 
         collection.deleteMany(Filters.in("_id", documentsIds));
+    }
+
+    public void updateOne(Bson update, ObjectId objectId, CollectionType collectionType) {
+        String collectionName = collectionType.getCollectionName();
+
+        MongoCollection<Document> collection = getCollection(collectionName);
+
+        Bson filter = Filters.eq("_id", objectId);
+
+        collection.updateOne(filter, update);
     }
 
     // REFACOTREDDD

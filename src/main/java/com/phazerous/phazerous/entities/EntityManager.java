@@ -1,5 +1,7 @@
 package com.phazerous.phazerous.entities;
 
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import com.phazerous.phazerous.db.CollectionType;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.db.DocumentBuilder;
@@ -7,6 +9,7 @@ import com.phazerous.phazerous.db.DocumentParser;
 import com.phazerous.phazerous.entities.models.*;
 import com.phazerous.phazerous.utils.NBTEditor;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -33,7 +36,7 @@ public class EntityManager {
     }
 
     public Document spawnEntity(LocationedEntity locationedEntity) {
-        String ENTITY_TYPE_NAME = "entityType";
+        final String ENTITY_TYPE_NAME = "entityType";
 
         Location entityLocation = getEntityLocation(locationedEntity);
         ObjectId entityId = locationedEntity.getEntityId();
@@ -51,7 +54,9 @@ public class EntityManager {
             runtimeEntityDoc = spawnMobEntity(entityLocation, mobEntity);
         }
 
-        return runtimeEntityDoc.append("locationedEntityId", locationedEntity.get_id());
+        return runtimeEntityDoc
+                .append("locationedEntityId", locationedEntity.get_id())
+                .append("entityType", entityTypeCode);
     }
 
     public void respawnEntity(LocationedEntity locationedEntity) {
@@ -143,17 +148,19 @@ public class EntityManager {
 
         Entity mob = world.spawn(location, mobClass);
 
-        mob.setCustomName(mobEntity.getTitle());
+        EntityUtils.setEntityHPTitle(mob, mobEntity.getTitle(), mobEntity.getMaxHealth(), mobEntity.getMaxHealth());
         mob.setCustomNameVisible(true);
 
         NBTEditor.setEntityPersistenceRequired(mob);
 
         UUID uuid = mob.getUniqueId();
 
+
         MobRuntimeEntity mobRuntimeEntity = new MobRuntimeEntity();
         mobRuntimeEntity.setUuid(uuid);
-        mobRuntimeEntity.setHealth(mobEntity.getHealth());
-        mobRuntimeEntity.setMaxHealth(mobEntity.getHealth());
+        mobRuntimeEntity.setHealth(mobEntity.getMaxHealth());
+        mobRuntimeEntity.setMaxHealth(mobEntity.getMaxHealth());
+        mobRuntimeEntity.setTitle(mobEntity.getTitle());
 
         return DocumentBuilder.buildDocument(mobRuntimeEntity);
     }
@@ -168,12 +175,6 @@ public class EntityManager {
         return (T) entities.get(entityId);
     }
 
-    public BaseRuntimeEntity getRuntimeEntityByUUID(UUID uuid) {
-        Document runtimeEntityDoc = dbManager.getDocument(new Document("uuid", uuid), CollectionType.RUNTIME_ENTITY);
-
-        return DocumentParser.parseDocument(runtimeEntityDoc, BaseRuntimeEntity.class);
-    }
-
     public LocationedEntity getLocationedEntityById(ObjectId id) {
         Document locationedEntityDoc = dbManager.getDocumentById(id, CollectionType.LOCATIONED_ENTITIES);
 
@@ -186,6 +187,28 @@ public class EntityManager {
         double z = locationedEntity.getZ();
 
         return new Location(world, x, y, z);
+    }
+
+    /**
+     * Returns the runtime entity by the given uuid.
+     * The function automatically parses the document to the entity type.
+     * ATTENTION: the function doesn't check if the entity exists.
+     *
+     * @param uuid
+     * @return
+     */
+    public Document getRuntimeEntityDocByUUID(UUID uuid) {
+        Bson query = Filters.eq("uuid", uuid);
+
+        Document runtimeEntityDoc = dbManager.getDocument(query, CollectionType.RUNTIME_ENTITY);
+
+        return runtimeEntityDoc;
+    }
+
+    public void updateRuntimeEntityHealth(ObjectId objectId, Long health) {
+        Bson update = Updates.set("health", health);
+
+        dbManager.updateOne(update, objectId, CollectionType.RUNTIME_ENTITY);
     }
 
     public static EntityManager getInstance() {

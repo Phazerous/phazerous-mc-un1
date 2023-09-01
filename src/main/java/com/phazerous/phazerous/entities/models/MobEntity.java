@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter @Setter
 public class MobEntity extends BaseEntity {
     private Integer mobType;
-    private Double health;
+    private Long maxHealth;
     private Double attack;
 }
