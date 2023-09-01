@@ -1,18 +1,21 @@
 package com.phazerous.phazerous.entities;
 
 import com.phazerous.phazerous.entities.models.*;
+import com.phazerous.phazerous.entities.models.runtime.RuntimeBaseEntity;
+import com.phazerous.phazerous.entities.models.runtime.RuntimeGatheringEntity;
+import com.phazerous.phazerous.entities.models.runtime.RuntimeMobEntity;
 import lombok.Getter;
 
 @Getter
 public enum EntityType {
-    GATHERING_ENTITY(0, GatheringEntity.class, BaseRuntimeEntity.class), MOB_ENTITY(1, MobEntity.class, MobRuntimeEntity.class);
+    GATHERING_ENTITY(0, GatheringEntity.class, RuntimeGatheringEntity.class), MOB_ENTITY(1, MobEntity.class, RuntimeMobEntity.class);
 
 
     private final Integer entityType;
     private final Class<? extends BaseEntity> entityClass;
-    private final Class<? extends BaseRuntimeEntity> runtimeEntityClass;
+    private final Class<? extends RuntimeBaseEntity> runtimeEntityClass;
 
-    EntityType(Integer entityType, Class<? extends BaseEntity> entityClass, Class<? extends BaseRuntimeEntity> runtimeEntityClass) {
+    EntityType(Integer entityType, Class<? extends BaseEntity> entityClass, Class<? extends RuntimeBaseEntity> runtimeEntityClass) {
         this.entityType = entityType;
         this.entityClass = entityClass;
         this.runtimeEntityClass = runtimeEntityClass;

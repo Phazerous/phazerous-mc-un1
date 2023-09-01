@@ -87,6 +87,8 @@ public class DBManager {
     }
 
     public void insertDocument(Document document, CollectionType collectionType) {
+        document.remove("_id");
+
         String collectionName = collectionType.getCollectionName();
 
         MongoCollection<Document> collection = getCollection(collectionName);

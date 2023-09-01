@@ -27,24 +27,19 @@ public class Phazerous extends JavaPlugin implements Listener {
                 .getConsoleSender()
                 .sendMessage("[Phazerous]: enabled.");
 
-        this.entityModule = new EntityModule(this, new DBManager(), getServer().getWorld("world"));
+        initialize();
 
         entityModule.enable();
-
-        initialize();
     }
 
     private void initialize() {
         DBManager dbManager = new DBManager();
-
-        EntityManager entityManager = new EntityManager(dbManager, getServer().getWorld("world"));
-
-        ItemManager itemManager = new ItemManager(dbManager);
-
         Scheduler scheduler = new Scheduler(Bukkit.getScheduler(), this);
+        ItemManager itemManager = new ItemManager(dbManager); // REFACTOR
+        this.entityModule = new EntityModule(this, new DBManager(), getServer().getWorld("world"), itemManager, scheduler);
+        EconomyManager economyManager = new EconomyManager(dbManager); // REFACTOR
 //        GatheringManager gatheringManager = new GatheringManager(scheduler, entityManager, itemManager);
-
-        EconomyManager economyManager = new EconomyManager(dbManager);
+        //REFACTOR
         ScoreboardManager scoreboardManager = new ScoreboardManager(economyManager);
         CustomInventoryManager customInventoryManager = new CustomInventoryManager(dbManager, itemManager);
         CustomInventoryActionManager customInventoryActionManager = new CustomInventoryActionManager(dbManager, economyManager, itemManager);
@@ -54,12 +49,10 @@ public class Phazerous extends JavaPlugin implements Listener {
     }
 
     private void initializeListeners(EconomyManager economyManager, ScoreboardManager scoreboardManager, CustomInventoryManager customInventoryManager, CustomInventoryActionManager customInventoryActionManager) {
-//        PlayerInteractAtEntityListener playerInteractAtEntityListener = new PlayerInteractAtEntityListener(entityManager, gatheringManager);
         PlayerJoinListener playerJoinListener = new PlayerJoinListener(economyManager, scoreboardManager);
         InventoryClickListener inventoryClickListener = new InventoryClickListener(customInventoryManager, customInventoryActionManager);
 
         ArrayList<Listener> listeners = new ArrayList<>();
-//        listeners.add(playerInteractAtEntityListener);
         listeners.add(playerJoinListener);
         listeners.add(inventoryClickListener);
 

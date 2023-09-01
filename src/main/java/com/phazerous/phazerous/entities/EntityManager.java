@@ -7,6 +7,9 @@ import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.db.DocumentBuilder;
 import com.phazerous.phazerous.db.DocumentParser;
 import com.phazerous.phazerous.entities.models.*;
+import com.phazerous.phazerous.entities.models.runtime.RuntimeBaseEntity;
+import com.phazerous.phazerous.entities.models.runtime.RuntimeGatheringEntity;
+import com.phazerous.phazerous.entities.models.runtime.RuntimeMobEntity;
 import com.phazerous.phazerous.utils.NBTEditor;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -83,22 +86,22 @@ public class EntityManager {
     }
 
     public void unloadEntities() {
-        List<BaseRuntimeEntity> runtimeEntities = getRuntimeEntities();
+        List<RuntimeBaseEntity> runtimeEntities = getRuntimeEntities();
 
-        for (BaseRuntimeEntity baseRuntimeEntity : runtimeEntities) {
-            removeEntityByUUID(baseRuntimeEntity.getUuid());
+        for (RuntimeBaseEntity runtimeBaseEntity : runtimeEntities) {
+            removeEntityByUUID(runtimeBaseEntity.getUuid());
         }
 
         List<ObjectId> runtimeEntitiesIds = runtimeEntities
                 .stream()
-                .map(BaseRuntimeEntity::get_id)
+                .map(RuntimeBaseEntity::get_id)
                 .collect(Collectors.toList());
 
         dbManager.deleteDocuments(runtimeEntitiesIds, CollectionType.RUNTIME_ENTITY);
     }
 
-    public void removeEntity(Entity entity, BaseRuntimeEntity baseRuntimeEntity) {
-        dbManager.deleteDocument(baseRuntimeEntity.get_id(), CollectionType.RUNTIME_ENTITY);
+    public void removeEntity(Entity entity, RuntimeBaseEntity runtimeBaseEntity) {
+        dbManager.deleteDocument(runtimeBaseEntity.get_id(), CollectionType.RUNTIME_ENTITY);
 
         entity.remove();
     }
@@ -126,11 +129,12 @@ public class EntityManager {
 
         NBTEditor.setEntityPersistenceRequired(armorStand);
 
-        BaseRuntimeEntity baseRuntimeEntity = new BaseRuntimeEntity();
-        baseRuntimeEntity.setUuid(armorStand.getUniqueId());
-        baseRuntimeEntity.setLocationedEntityId(gatheringEntity.get_id());
+        RuntimeGatheringEntity runtimeGatheringEntity = new RuntimeGatheringEntity();
+        runtimeGatheringEntity.setUuid(armorStand.getUniqueId());
+        runtimeGatheringEntity.setLocationedEntityId(gatheringEntity.get_id());
+        runtimeGatheringEntity.setHardness(gatheringEntity.getHardness());
 
-        return DocumentBuilder.buildDocument(baseRuntimeEntity);
+        return DocumentBuilder.buildDocument(runtimeGatheringEntity);
     }
 
     /**
@@ -148,7 +152,7 @@ public class EntityManager {
 
         Entity mob = world.spawn(location, mobClass);
 
-        EntityUtils.setEntityHPTitle(mob, mobEntity.getTitle(), mobEntity.getMaxHealth(), mobEntity.getMaxHealth());
+        EntityUtils.setMobEntityHPTitle(mob, mobEntity.getTitle(), mobEntity.getMaxHealth(), mobEntity.getMaxHealth());
         mob.setCustomNameVisible(true);
 
         NBTEditor.setEntityPersistenceRequired(mob);
@@ -156,7 +160,7 @@ public class EntityManager {
         UUID uuid = mob.getUniqueId();
 
 
-        MobRuntimeEntity mobRuntimeEntity = new MobRuntimeEntity();
+        RuntimeMobEntity mobRuntimeEntity = new RuntimeMobEntity();
         mobRuntimeEntity.setUuid(uuid);
         mobRuntimeEntity.setHealth(mobEntity.getMaxHealth());
         mobRuntimeEntity.setMaxHealth(mobEntity.getMaxHealth());
@@ -205,6 +209,11 @@ public class EntityManager {
         return runtimeEntityDoc;
     }
 
+    public void spawnEntityAndInsert(LocationedEntity locationedEntity) {
+        Document runtimeEntityDoc = spawnEntity(locationedEntity);
+        dbManager.insertDocument(runtimeEntityDoc, CollectionType.RUNTIME_ENTITY);
+    }
+
     public void updateRuntimeEntityHealth(ObjectId objectId, Long health) {
         Bson update = Updates.set("health", health);
 
@@ -215,11 +224,11 @@ public class EntityManager {
         return EntityManager.entityManager;
     }
 
-    private List<BaseRuntimeEntity> getRuntimeEntities() {
+    private List<RuntimeBaseEntity> getRuntimeEntities() {
         List<Document> runtimeEntitiesDocs = dbManager.getDocuments(CollectionType.RUNTIME_ENTITY);
         return runtimeEntitiesDocs
                 .stream()
-                .map(it -> DocumentParser.parseDocument(it, BaseRuntimeEntity.class))
+                .map(it -> DocumentParser.parseDocument(it, RuntimeBaseEntity.class))
                 .collect(Collectors.toList());
     }
 }

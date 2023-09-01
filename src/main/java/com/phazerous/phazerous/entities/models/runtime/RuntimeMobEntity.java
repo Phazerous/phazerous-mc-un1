@@ -1,11 +1,11 @@
-package com.phazerous.phazerous.entities.models;
+package com.phazerous.phazerous.entities.models.runtime;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class MobRuntimeEntity extends BaseRuntimeEntity {
+public class RuntimeMobEntity extends RuntimeBaseEntity {
     private String title;
     private Long health;
     private Long maxHealth;

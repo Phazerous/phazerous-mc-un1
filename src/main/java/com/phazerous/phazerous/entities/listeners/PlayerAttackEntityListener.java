@@ -2,12 +2,11 @@ package com.phazerous.phazerous.entities.listeners;
 
 import com.phazerous.phazerous.db.DocumentParser;
 import com.phazerous.phazerous.entities.EntityManager;
+import com.phazerous.phazerous.entities.EntityTerminateManager;
 import com.phazerous.phazerous.entities.EntityType;
 import com.phazerous.phazerous.entities.EntityUtils;
-import com.phazerous.phazerous.entities.models.BaseEntity;
-import com.phazerous.phazerous.entities.models.BaseRuntimeEntity;
-import com.phazerous.phazerous.entities.models.MobEntity;
-import com.phazerous.phazerous.entities.models.MobRuntimeEntity;
+import com.phazerous.phazerous.entities.models.runtime.RuntimeBaseEntity;
+import com.phazerous.phazerous.entities.models.runtime.RuntimeMobEntity;
 import org.bson.Document;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -21,9 +20,11 @@ import java.util.UUID;
 public class PlayerAttackEntityListener implements Listener {
 
     private final EntityManager entityManager;
+    private final EntityTerminateManager entityTerminateManager;
 
-    public PlayerAttackEntityListener(EntityManager entityManager) {
+    public PlayerAttackEntityListener(EntityManager entityManager, EntityTerminateManager entityTerminateManager) {
         this.entityManager = entityManager;
+        this.entityTerminateManager = entityTerminateManager;
     }
 
     @EventHandler
@@ -42,19 +43,24 @@ public class PlayerAttackEntityListener implements Listener {
         if (runtimeEntityDoc == null) return;
 
         EntityType entityType = EntityUtils.getRuntimeEntityType(runtimeEntityDoc);
-        Class<? extends BaseRuntimeEntity> runtimeEntityClass = entityType.getRuntimeEntityClass();
-        BaseRuntimeEntity baseRuntimeEntity = DocumentParser.parseDocument(runtimeEntityDoc, runtimeEntityClass);
+        Class<? extends RuntimeBaseEntity> runtimeEntityClass = entityType.getRuntimeEntityClass();
+        RuntimeBaseEntity runtimeBaseEntity = DocumentParser.parseDocument(runtimeEntityDoc, runtimeEntityClass);
 
         if (entityType == EntityType.MOB_ENTITY) {
-            MobRuntimeEntity mobRuntimeEntity = (MobRuntimeEntity) baseRuntimeEntity;
-            Long health = mobRuntimeEntity.getHealth();
-            Long maxHealth = mobRuntimeEntity.getMaxHealth();
-
-            health -= 2;
-            EntityUtils.setEntityHPTitle(entity, mobRuntimeEntity.getTitle(), health, maxHealth);
-            ((LivingEntity) entity).damage(0);
-
-            entityManager.updateRuntimeEntityHealth(mobRuntimeEntity.get_id(), health);
+            handleMobEntity(entity, (RuntimeMobEntity) runtimeBaseEntity, player);
         }
+    }
+
+    private void handleMobEntity(Entity entity, RuntimeMobEntity mobRuntimeEntity, Player player) {
+        Long health = mobRuntimeEntity.getHealth();
+        Long maxHealth = mobRuntimeEntity.getMaxHealth();
+
+        health -= 2;
+        EntityUtils.setMobEntityHPTitle(entity, mobRuntimeEntity.getTitle(), health, maxHealth);
+        ((LivingEntity) entity).damage(0);
+
+        entityManager.updateRuntimeEntityHealth(mobRuntimeEntity.get_id(), health);
+
+        if (health <= 0) entityTerminateManager.terminateEntity(entity, mobRuntimeEntity, player);
     }
 }
