@@ -1,6 +1,6 @@
-package com.phazerous.phazerous.managers;
+package com.phazerous.phazerous.items;
 
-import com.phazerous.phazerous.dtos.ItemDto;
+import com.phazerous.phazerous.items.models.ItemDto;
 import com.phazerous.phazerous.enums.RarityType;
 import com.phazerous.phazerous.db.DBManager;
 import org.bson.types.ObjectId;

@@ -1,4 +1,4 @@
-package com.phazerous.phazerous.dtos;
+package com.phazerous.phazerous.items.models;
 
 import com.phazerous.phazerous.enums.RarityType;
 import lombok.AccessLevel;
@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
 
-@Getter @Setter
+@Getter
+@Setter
 public class ItemDto {
     private ObjectId id;
 

@@ -1,4 +1,4 @@
-package com.phazerous.phazerous.db;
+package com.phazerous.phazerous.db.utils;
 
 import org.bson.Document;
 
@@ -15,7 +15,7 @@ public class DocumentParser {
             Class<?> currentClass = clazz;
 
             while (currentClass != null) {
-                Field[] fields =  currentClass.getDeclaredFields();
+                Field[] fields = currentClass.getDeclaredFields();
 
                 for (Field field : fields) {
                     field.setAccessible(true);
@@ -31,7 +31,9 @@ public class DocumentParser {
 
                             if (rawType == List.class) {
                                 List<?> documentList = (List<?>) document.get(fieldName);
-                                List<Object> newList = (List<Object>) documentList.getClass().newInstance();
+                                List<Object> newList = (List<Object>) documentList
+                                        .getClass()
+                                        .newInstance();
 
                                 for (Object object : documentList) {
                                     if (object instanceof Document) {

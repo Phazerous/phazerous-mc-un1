@@ -1,7 +1,7 @@
 package com.phazerous.phazerous.listeners;
 
-import com.phazerous.phazerous.managers.EconomyManager;
-import com.phazerous.phazerous.managers.ScoreboardManager;
+import com.phazerous.phazerous.economy.EconomyManager;
+import com.phazerous.phazerous.utils.ScoreboardManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -19,7 +19,9 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        UUID playerUUID = event.getPlayer().getUniqueId();
+        UUID playerUUID = event
+                .getPlayer()
+                .getUniqueId();
 
         economyManager.validatePlayerBalance(playerUUID);
         scoreboardManager.createBoard(event.getPlayer());

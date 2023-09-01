@@ -5,7 +5,7 @@ import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.entities.models.BaseEntity;
 import com.phazerous.phazerous.entities.models.runtime.RuntimeBaseEntity;
 import com.phazerous.phazerous.entities.models.LocationedEntity;
-import com.phazerous.phazerous.managers.ItemManager;
+import com.phazerous.phazerous.items.ItemManager;
 import com.phazerous.phazerous.utils.Scheduler;
 import org.bson.types.ObjectId;
 import org.bukkit.entity.Entity;

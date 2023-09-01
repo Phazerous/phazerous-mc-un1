@@ -1,4 +1,4 @@
-package com.phazerous.phazerous.db;
+package com.phazerous.phazerous.db.utils;
 
 import org.bson.Document;
 
@@ -18,7 +18,7 @@ public class DocumentBuilder {
             while (currentClass != null) {
                 Field[] fields = currentClass.getDeclaredFields();
 
-                for (Field field: fields) {
+                for (Field field : fields) {
                     field.setAccessible(true);
 
                     String fieldName = field.getName();

@@ -1,5 +1,7 @@
-package com.phazerous.phazerous.managers;
+package com.phazerous.phazerous.utils;
 
+import com.phazerous.phazerous.economy.EconomyManager;
+import com.phazerous.phazerous.economy.interfaces.IEconomySubscriber;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -12,7 +14,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class ScoreboardManager {
+public class ScoreboardManager implements IEconomySubscriber {
     private final EconomyManager economyManager;
     private final HashMap<UUID, Consumer<Double>> balanceSetters = new HashMap<>();
 
@@ -49,7 +51,9 @@ public class ScoreboardManager {
         String entry = "§" + slot;
 
         team.addEntry(entry);
-        objective.getScore(entry).setScore(slot);
+        objective
+                .getScore(entry)
+                .setScore(slot);
 
         return team;
     }
@@ -66,8 +70,9 @@ public class ScoreboardManager {
         };
     }
 
-    public void updateBalance(UUID playerUUID, double newBalance) {
+    @Override
+    public void update(UUID playerUUID, double balance) {
         Consumer<Double> setBalance = balanceSetters.get(playerUUID);
-        setBalance.accept(newBalance);
+        setBalance.accept(balance);
     }
 }

@@ -3,7 +3,7 @@ package com.phazerous.phazerous.entities;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.entities.listeners.PlayerAttackEntityListener;
 import com.phazerous.phazerous.entities.listeners.PlayerInteractAtEntityListener;
-import com.phazerous.phazerous.managers.ItemManager;
+import com.phazerous.phazerous.items.ItemManager;
 import com.phazerous.phazerous.utils.Scheduler;
 import org.bukkit.World;
 import org.bukkit.plugin.PluginManager;

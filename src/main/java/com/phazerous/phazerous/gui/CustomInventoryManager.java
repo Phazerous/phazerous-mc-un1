@@ -3,7 +3,7 @@ package com.phazerous.phazerous.gui;
 import com.phazerous.phazerous.gui.dtos.CustomInventoryDto;
 import com.phazerous.phazerous.gui.dtos.CustomInventoryItemDto;
 import com.phazerous.phazerous.db.DBManager;
-import com.phazerous.phazerous.managers.ItemManager;
+import com.phazerous.phazerous.items.ItemManager;
 import org.bson.types.ObjectId;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

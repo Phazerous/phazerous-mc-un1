@@ -3,8 +3,8 @@ package com.phazerous.phazerous.gui.actions;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.gui.GUISharedConstants;
 import com.phazerous.phazerous.gui.actions.dtos.CustomInventoryActionDto;
-import com.phazerous.phazerous.managers.EconomyManager;
-import com.phazerous.phazerous.managers.ItemManager;
+import com.phazerous.phazerous.economy.EconomyManager;
+import com.phazerous.phazerous.items.ItemManager;
 import com.phazerous.phazerous.utils.NBTEditor;
 import org.bson.types.ObjectId;
 import org.bukkit.entity.Player;
@@ -41,6 +41,8 @@ public class CustomInventoryActionManager {
         ObjectId itemId = customInventoryAction.getItemId();
         ItemStack item = itemManager.getItemById(itemId);
 
-        player.getInventory().addItem(item);
+        player
+                .getInventory()
+                .addItem(item);
     }
 }

@@ -2,14 +2,14 @@ package com.phazerous.phazerous;
 
 import com.phazerous.phazerous.commands.CommandExecutor;
 import com.phazerous.phazerous.db.DBManager;
-import com.phazerous.phazerous.entities.EntityManager;
+import com.phazerous.phazerous.economy.EconomyManager;
+import com.phazerous.phazerous.items.ItemManager;
+import com.phazerous.phazerous.utils.ScoreboardManager;
 import com.phazerous.phazerous.entities.EntityModule;
 import com.phazerous.phazerous.gui.CustomInventoryManager;
 import com.phazerous.phazerous.gui.actions.CustomInventoryActionManager;
 import com.phazerous.phazerous.listeners.InventoryClickListener;
-import com.phazerous.phazerous.entities.listeners.PlayerInteractAtEntityListener;
 import com.phazerous.phazerous.listeners.PlayerJoinListener;
-import com.phazerous.phazerous.managers.*;
 import com.phazerous.phazerous.utils.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -37,15 +37,17 @@ public class Phazerous extends JavaPlugin implements Listener {
         Scheduler scheduler = new Scheduler(Bukkit.getScheduler(), this);
         ItemManager itemManager = new ItemManager(dbManager); // REFACTOR
         this.entityModule = new EntityModule(this, new DBManager(), getServer().getWorld("world"), itemManager, scheduler);
-        EconomyManager economyManager = new EconomyManager(dbManager); // REFACTOR
-//        GatheringManager gatheringManager = new GatheringManager(scheduler, entityManager, itemManager);
-        //REFACTOR
+
+        EconomyManager economyManager = new EconomyManager(dbManager);
         ScoreboardManager scoreboardManager = new ScoreboardManager(economyManager);
+        economyManager.subscribe(scoreboardManager);
+
+        //REFACTOR
         CustomInventoryManager customInventoryManager = new CustomInventoryManager(dbManager, itemManager);
         CustomInventoryActionManager customInventoryActionManager = new CustomInventoryActionManager(dbManager, economyManager, itemManager);
 
         initializeListeners(economyManager, scoreboardManager, customInventoryManager, customInventoryActionManager);
-        registerCommands(economyManager, scoreboardManager, customInventoryManager);
+        registerCommands(economyManager, customInventoryManager);
     }
 
     private void initializeListeners(EconomyManager economyManager, ScoreboardManager scoreboardManager, CustomInventoryManager customInventoryManager, CustomInventoryActionManager customInventoryActionManager) {
@@ -63,8 +65,8 @@ public class Phazerous extends JavaPlugin implements Listener {
         }
     }
 
-    private void registerCommands(EconomyManager economyManager, ScoreboardManager scoreboardManager, CustomInventoryManager customInventoryManager) {
-        getCommand("bal").setExecutor(new CommandExecutor(economyManager, scoreboardManager, customInventoryManager));
+    private void registerCommands(EconomyManager economyManager, CustomInventoryManager customInventoryManager) {
+        getCommand("bal").setExecutor(new CommandExecutor(economyManager, customInventoryManager));
     }
 
     @Override

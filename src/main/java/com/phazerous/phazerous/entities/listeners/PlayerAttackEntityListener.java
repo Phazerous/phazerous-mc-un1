@@ -1,6 +1,6 @@
 package com.phazerous.phazerous.entities.listeners;
 
-import com.phazerous.phazerous.db.DocumentParser;
+import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.entities.EntityManager;
 import com.phazerous.phazerous.entities.EntityTerminateManager;
 import com.phazerous.phazerous.entities.EntityType;
