@@ -3,7 +3,7 @@ package com.phazerous.phazerous.managers;
 import com.phazerous.phazerous.entities.EntityManager;
 import com.phazerous.phazerous.entities.models.GatheringEntity;
 import com.phazerous.phazerous.entities.models.LocationedEntity;
-import com.phazerous.phazerous.entities.models.RuntimeEntity;
+import com.phazerous.phazerous.entities.models.BaseRuntimeEntity;
 import com.phazerous.phazerous.utils.Scheduler;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -38,7 +38,7 @@ public class GatheringManager {
         this.itemManager = itemManager;
     }
 
-    public void gather(LocationedEntity locationedEntity, GatheringEntity gatheringEntity, Player player, Entity entity, RuntimeEntity runtimeEntity) {
+    public void gather(LocationedEntity locationedEntity, GatheringEntity gatheringEntity, Player player, Entity entity, BaseRuntimeEntity baseRuntimeEntity) {
         long hardness = gatheringEntity.getHardness();
         List<ObjectId> dropIds = gatheringEntity.getDropsIds();
 
@@ -58,7 +58,7 @@ public class GatheringManager {
         int finishGatherId = scheduler.runTaskLater(() -> {
             player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 5, 5);
             scheduler.cancelTask(gatherIntervalId);
-            entityManager.removeEntity(entity, runtimeEntity);
+            entityManager.removeEntity(entity, baseRuntimeEntity);
 
             scheduler.scheduleEntityRespawn(locationedEntity, gatheringEntity.getRespawnTime());
 

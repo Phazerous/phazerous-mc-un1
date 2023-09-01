@@ -2,11 +2,9 @@ package com.phazerous.phazerous.entities;
 
 import com.phazerous.phazerous.db.CollectionType;
 import com.phazerous.phazerous.db.DBManager;
+import com.phazerous.phazerous.db.DocumentBuilder;
 import com.phazerous.phazerous.db.DocumentParser;
-import com.phazerous.phazerous.entities.models.BaseEntity;
-import com.phazerous.phazerous.entities.models.GatheringEntity;
-import com.phazerous.phazerous.entities.models.LocationedEntity;
-import com.phazerous.phazerous.entities.models.RuntimeEntity;
+import com.phazerous.phazerous.entities.models.*;
 import com.phazerous.phazerous.utils.NBTEditor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -34,27 +32,30 @@ public class EntityManager {
         EntityManager.entityManager = this;
     }
 
-    public RuntimeEntity spawnEntity(LocationedEntity locationedEntity) {
+    public Document spawnEntity(LocationedEntity locationedEntity) {
         String ENTITY_TYPE_NAME = "entityType";
 
         Location entityLocation = getEntityLocation(locationedEntity);
         ObjectId entityId = locationedEntity.getEntityId();
         Document entityDoc = dbManager.getDocumentById(entityId, CollectionType.ENTITIES);
-        Integer entityType = entityDoc.getInteger(ENTITY_TYPE_NAME);
+        Integer entityTypeCode = entityDoc.getInteger(ENTITY_TYPE_NAME);
+        EntityType entityType = EntityType.fromInteger(entityTypeCode);
 
-        UUID uuid = null;
+        Document runtimeEntityDoc = null;
 
-        if (entityType == 0) {
+        if (entityType == EntityType.GATHERING_ENTITY) {
             GatheringEntity gatheringEntity = getEntity(entityId, GatheringEntity.class);
-            uuid = spawnGatheringEntity(entityLocation, gatheringEntity);
+            runtimeEntityDoc = spawnGatheringEntity(entityLocation, gatheringEntity);
+        } else if (entityType == EntityType.MOB_ENTITY) {
+            MobEntity mobEntity = getEntity(entityId, MobEntity.class);
+            runtimeEntityDoc = spawnMobEntity(entityLocation, mobEntity);
         }
 
-        return prepareRuntimeEntity(uuid, locationedEntity.get_id());
+        return runtimeEntityDoc.append("locationedEntityId", locationedEntity.get_id());
     }
 
     public void respawnEntity(LocationedEntity locationedEntity) {
-        RuntimeEntity runtimeEntity = spawnEntity(locationedEntity);
-        Document runtimeEntityDoc = RuntimeEntity.toInsertDocument(runtimeEntity);
+        Document runtimeEntityDoc = spawnEntity(locationedEntity);
 
         dbManager.insertDocument(runtimeEntityDoc, CollectionType.RUNTIME_ENTITY);
     }
@@ -66,38 +67,33 @@ public class EntityManager {
                 .map(it -> DocumentParser.parseDocument(it, LocationedEntity.class))
                 .collect(Collectors.toList());
 
-        List<RuntimeEntity> runtimeEntities = new ArrayList<>();
+        List<Document> runtimeEntitiesDocs = new ArrayList<>();
 
         for (LocationedEntity locationedEntity : locationedEntities) {
-            RuntimeEntity runtimeEntity = spawnEntity(locationedEntity);
-            runtimeEntities.add(runtimeEntity);
+            Document runtimeEntityDoc = spawnEntity(locationedEntity);
+            runtimeEntitiesDocs.add(runtimeEntityDoc);
         }
-
-        List<Document> runtimeEntitiesDocs = runtimeEntities
-                .stream()
-                .map(RuntimeEntity::toInsertDocument)
-                .collect(Collectors.toList());
 
         dbManager.insertDocuments(runtimeEntitiesDocs, CollectionType.RUNTIME_ENTITY);
     }
 
     public void unloadEntities() {
-        List<RuntimeEntity> runtimeEntities = getRuntimeEntities();
+        List<BaseRuntimeEntity> runtimeEntities = getRuntimeEntities();
 
-        for (RuntimeEntity runtimeEntity : runtimeEntities) {
-            removeEntityByUUID(runtimeEntity.getUuid());
+        for (BaseRuntimeEntity baseRuntimeEntity : runtimeEntities) {
+            removeEntityByUUID(baseRuntimeEntity.getUuid());
         }
 
         List<ObjectId> runtimeEntitiesIds = runtimeEntities
                 .stream()
-                .map(RuntimeEntity::get_id)
+                .map(BaseRuntimeEntity::get_id)
                 .collect(Collectors.toList());
 
         dbManager.deleteDocuments(runtimeEntitiesIds, CollectionType.RUNTIME_ENTITY);
     }
 
-    public void removeEntity(Entity entity, RuntimeEntity runtimeEntity) {
-        dbManager.deleteDocument(runtimeEntity.get_id(), CollectionType.RUNTIME_ENTITY);
+    public void removeEntity(Entity entity, BaseRuntimeEntity baseRuntimeEntity) {
+        dbManager.deleteDocument(baseRuntimeEntity.get_id(), CollectionType.RUNTIME_ENTITY);
 
         entity.remove();
     }
@@ -113,7 +109,7 @@ public class EntityManager {
         }
     }
 
-    private UUID spawnGatheringEntity(Location location, GatheringEntity gatheringEntity) {
+    private Document spawnGatheringEntity(Location location, GatheringEntity gatheringEntity) {
         ArmorStand armorStand = world.spawn(location, ArmorStand.class);
 
         armorStand.setCustomName(gatheringEntity.getTitle());
@@ -125,14 +121,41 @@ public class EntityManager {
 
         NBTEditor.setEntityPersistenceRequired(armorStand);
 
-        return armorStand.getUniqueId();
+        BaseRuntimeEntity baseRuntimeEntity = new BaseRuntimeEntity();
+        baseRuntimeEntity.setUuid(armorStand.getUniqueId());
+        baseRuntimeEntity.setLocationedEntityId(gatheringEntity.get_id());
+
+        return DocumentBuilder.buildDocument(baseRuntimeEntity);
     }
 
-    private RuntimeEntity prepareRuntimeEntity(UUID uuid, ObjectId locationedEntityId) {
-        RuntimeEntity runtimeEntity = new RuntimeEntity();
-        runtimeEntity.setLocationedEntityId(locationedEntityId);
-        runtimeEntity.setUuid(uuid);
-        return runtimeEntity;
+    /**
+     * Spawns a mob entity at the given location.
+     * Prepare MobRuntimeEntity, parse it to the document and return it.
+     * ATTENTION: in the environment where the function is called, it's necessary to insert the locationEntityId
+     *
+     * @param location
+     * @param mobEntity
+     * @return Document of the mob runtime entity.
+     */
+    private Document spawnMobEntity(Location location, MobEntity mobEntity) {
+        org.bukkit.entity.EntityType mobType = org.bukkit.entity.EntityType.fromId(mobEntity.getMobType());
+        Class<? extends Entity> mobClass = mobType.getEntityClass();
+
+        Entity mob = world.spawn(location, mobClass);
+
+        mob.setCustomName(mobEntity.getTitle());
+        mob.setCustomNameVisible(true);
+
+        NBTEditor.setEntityPersistenceRequired(mob);
+
+        UUID uuid = mob.getUniqueId();
+
+        MobRuntimeEntity mobRuntimeEntity = new MobRuntimeEntity();
+        mobRuntimeEntity.setUuid(uuid);
+        mobRuntimeEntity.setHealth(mobEntity.getHealth());
+        mobRuntimeEntity.setMaxHealth(mobEntity.getHealth());
+
+        return DocumentBuilder.buildDocument(mobRuntimeEntity);
     }
 
     public <T extends BaseEntity> T getEntity(ObjectId entityId, Class<T> entityClass) {
@@ -145,10 +168,10 @@ public class EntityManager {
         return (T) entities.get(entityId);
     }
 
-    public RuntimeEntity getRuntimeEntityByUUID(UUID uuid) {
+    public BaseRuntimeEntity getRuntimeEntityByUUID(UUID uuid) {
         Document runtimeEntityDoc = dbManager.getDocument(new Document("uuid", uuid), CollectionType.RUNTIME_ENTITY);
 
-        return DocumentParser.parseDocument(runtimeEntityDoc, RuntimeEntity.class);
+        return DocumentParser.parseDocument(runtimeEntityDoc, BaseRuntimeEntity.class);
     }
 
     public LocationedEntity getLocationedEntityById(ObjectId id) {
@@ -169,11 +192,11 @@ public class EntityManager {
         return EntityManager.entityManager;
     }
 
-    private List<RuntimeEntity> getRuntimeEntities() {
+    private List<BaseRuntimeEntity> getRuntimeEntities() {
         List<Document> runtimeEntitiesDocs = dbManager.getDocuments(CollectionType.RUNTIME_ENTITY);
         return runtimeEntitiesDocs
                 .stream()
-                .map(it -> DocumentParser.parseDocument(it, RuntimeEntity.class))
+                .map(it -> DocumentParser.parseDocument(it, BaseRuntimeEntity.class))
                 .collect(Collectors.toList());
     }
 }

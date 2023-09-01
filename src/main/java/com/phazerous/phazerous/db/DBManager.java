@@ -78,6 +78,8 @@ public class DBManager {
     public void insertDocuments(List<Document> documents, CollectionType collectionType) {
         String collectionName = collectionType.getCollectionName();
 
+        documents.forEach(it -> it.remove("_id"));
+
         MongoCollection<Document> collection = getCollection(collectionName);
 
         collection.insertMany(documents);

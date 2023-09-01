@@ -2,7 +2,7 @@ package com.phazerous.phazerous.db;
 
 import com.phazerous.phazerous.dtos.*;
 import com.phazerous.phazerous.entities.models.LocationedEntity;
-import com.phazerous.phazerous.entities.models.RuntimeEntity;
+import com.phazerous.phazerous.entities.models.BaseRuntimeEntity;
 import com.phazerous.phazerous.gui.actions.dtos.CustomInventoryActionDto;
 import com.phazerous.phazerous.gui.dtos.CustomInventoryDto;
 import lombok.Getter;
@@ -30,7 +30,7 @@ public enum CollectionType {
             return ENTITIES;
         } else if (clazz == ItemDto.class) {
             return ITEM;
-        } else if (clazz == RuntimeEntity.class) {
+        } else if (clazz == BaseRuntimeEntity.class) {
             return RUNTIME_ENTITY;
         } else if (clazz == PlayerBalanceDto.class) {
             return PLAYER_BALANCE;
