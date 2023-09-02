@@ -4,10 +4,7 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
-import com.phazerous.phazerous.economy.models.PlayerBalance;
-import com.phazerous.phazerous.gui.actions.dtos.CustomInventoryActionDto;
-import com.phazerous.phazerous.gui.dtos.CustomInventoryDto;
-import com.phazerous.phazerous.items.models.ItemDto;
+import com.phazerous.phazerous.db.enums.CollectionType;
 import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -17,38 +14,28 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 public class DBManager {
     private final MongoDatabase database;
     private final MongoClient mongoClient;
-    private final HashMap<Class<?>, MongoCollection<?>> collections = new HashMap<>();
 
     public DBManager() {
         String MONGO_DB_CONNECTION_STRING = "mongodb://localhost:27017";
         String MONGO_DB_NAME = "mc-db";
 
         ConnectionString connectionString = new ConnectionString(MONGO_DB_CONNECTION_STRING);
-        CodecRegistry pojoCodecRegistry = CodecRegistries.fromProviders(PojoCodecProvider
-                .builder()
-                .automatic(true)
+        CodecRegistry pojoCodecRegistry = CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true)
                 .build());
         CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
 
-        MongoClientSettings settings = MongoClientSettings
-                .builder()
-                .applyConnectionString(connectionString)
-                .codecRegistry(codecRegistry)
-                .uuidRepresentation(UuidRepresentation.STANDARD)
-                .build();
+        MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(connectionString)
+                .codecRegistry(codecRegistry).uuidRepresentation(UuidRepresentation.STANDARD).build();
 
         mongoClient = MongoClients.create(settings);
         database = mongoClient.getDatabase(MONGO_DB_NAME);
     }
 
-    // REFACOTREDDD
 
     public List<Document> getDocuments(CollectionType collectionType) {
         String collectionName = collectionType.getCollectionName();
@@ -58,21 +45,17 @@ public class DBManager {
         return documentsIterator.into(new ArrayList<>());
     }
 
-    public Document getDocumentById(ObjectId id, CollectionType collectionType) {
+    public Document getDocument(ObjectId id, CollectionType collectionType) {
         String collectionName = collectionType.getCollectionName();
         Document query = new Document("_id", id);
 
-        return getCollection(collectionName)
-                .find(query)
-                .first();
+        return getCollection(collectionName).find(query).first();
     }
 
     public Document getDocument(Bson query, CollectionType collectionType) {
         String collectionName = collectionType.getCollectionName();
 
-        return getCollection(collectionName)
-                .find(query)
-                .first();
+        return getCollection(collectionName).find(query).first();
     }
 
     public void insertDocuments(List<Document> documents, CollectionType collectionType) {
@@ -103,6 +86,14 @@ public class DBManager {
         collection.deleteOne(Filters.eq("_id", documentId));
     }
 
+    public void deleteDocument(Bson query, CollectionType collectionType) {
+        String collectionName = collectionType.getCollectionName();
+
+        MongoCollection<Document> collection = getCollection(collectionName);
+
+        collection.deleteOne(query);
+    }
+
     public void deleteDocuments(List<ObjectId> documentsIds, CollectionType collectionType) {
         String collectionName = collectionType.getCollectionName();
 
@@ -125,64 +116,8 @@ public class DBManager {
         collection.updateOne(filter, update);
     }
 
-    // REFACOTREDDD
-
-
-    private <T> MongoCollection<T> getCollection(Class<T> collectionClass) {
-        if (!collections.containsKey(collectionClass)) {
-            String collectionName = CollectionType
-                    .getCollectionTypeByClass(collectionClass)
-                    .getCollectionName();
-            MongoCollection<T> collection = database.getCollection(collectionName, collectionClass);
-
-            collections.put(collectionClass, collection);
-        }
-
-        return (MongoCollection<T>) collections.get(collectionClass);
-    }
-
-    //REFACTOR
     private MongoCollection<Document> getCollection(String collectionName) {
         return database.getCollection(collectionName);
-    }
-
-    public ItemDto getItemDtoById(ObjectId id) {
-        Document query = new Document("_id", id);
-
-        return getCollection(ItemDto.class)
-                .find(query)
-                .first();
-    }
-
-    public CustomInventoryActionDto getCustomInventoryActionByID(ObjectId id) {
-        Document query = new Document("_id", id);
-
-        return getCollection(CustomInventoryActionDto.class)
-                .find(query)
-                .first();
-    }
-
-    public void setPlayerBalance(UUID playerUUID, double balance) {
-        Document query = new Document("playerUUID", playerUUID);
-        Document update = new Document("$set", new Document("balance", balance));
-
-        getCollection(PlayerBalance.class).updateOne(query, update);
-    }
-
-    public void createPlayerBalance(UUID playerUUID) {
-        PlayerBalance playerBalance = new PlayerBalance();
-        playerBalance.setPlayerUUID(playerUUID);
-        playerBalance.setBalance(0d);
-
-        getCollection(PlayerBalance.class).insertOne(playerBalance);
-    }
-
-    public CustomInventoryDto getCustomInventoryDtoById(ObjectId id) {
-        Document query = new Document("_id", id);
-
-        return getCollection(CustomInventoryDto.class)
-                .find(query)
-                .first();
     }
 
     public void close() {

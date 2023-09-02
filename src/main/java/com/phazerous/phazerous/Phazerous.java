@@ -1,32 +1,28 @@
 package com.phazerous.phazerous;
 
+import com.phazerous.phazerous.archtecture.AbstractModule;
+import com.phazerous.phazerous.commands.AbstractCommand;
 import com.phazerous.phazerous.commands.CommandExecutor;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.economy.EconomyManager;
-import com.phazerous.phazerous.entities.EntityManager;
-import com.phazerous.phazerous.items.ItemManager;
-import com.phazerous.phazerous.utils.ScoreboardManager;
+import com.phazerous.phazerous.economy.EconomyModule;
 import com.phazerous.phazerous.entities.EntityModule;
-import com.phazerous.phazerous.gui.CustomInventoryManager;
-import com.phazerous.phazerous.gui.actions.CustomInventoryActionManager;
-import com.phazerous.phazerous.listeners.InventoryClickListener;
-import com.phazerous.phazerous.listeners.PlayerJoinListener;
+import com.phazerous.phazerous.gui.GUIModule;
+import com.phazerous.phazerous.items.ItemManager;
+import com.phazerous.phazerous.items.ItemsModule;
 import com.phazerous.phazerous.utils.Scheduler;
+import com.phazerous.phazerous.utils.ScoreboardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.ArrayList;
 
 public class Phazerous extends JavaPlugin implements Listener {
     private EntityModule entityModule;
 
     @Override
     public void onEnable() {
-        getServer()
-                .getConsoleSender()
-                .sendMessage("[Phazerous]: enabled.");
+        getServer().getConsoleSender().sendMessage("[Phazerous]: enabled.");
 
         initialize();
 
@@ -36,36 +32,41 @@ public class Phazerous extends JavaPlugin implements Listener {
     private void initialize() {
         DBManager dbManager = new DBManager();
         Scheduler scheduler = Scheduler.init(Bukkit.getScheduler(), this);
-        ItemManager itemManager = new ItemManager(dbManager); // REFACTOR
-        this.entityModule = new EntityModule(this, new DBManager(), getServer().getWorld("world"), itemManager, scheduler);
 
-        EconomyManager economyManager = new EconomyManager(dbManager);
-        ScoreboardManager scoreboardManager = new ScoreboardManager(economyManager);
-        economyManager.subscribe(scoreboardManager);
+        ItemsModule itemsModule = new ItemsModule(dbManager);
+        ItemManager itemManager = itemsModule.getItemManager();
 
-        //REFACTOR
-        CustomInventoryManager customInventoryManager = new CustomInventoryManager(dbManager, itemManager);
-        CustomInventoryActionManager customInventoryActionManager = new CustomInventoryActionManager(dbManager, economyManager, itemManager);
+        this.entityModule = new EntityModule(dbManager, itemManager);
 
-        initializeListeners(economyManager, scoreboardManager, customInventoryManager, customInventoryActionManager);
+        ScoreboardManager scoreboardManager = new ScoreboardManager();
 
-        EntityManager test = entityModule.getEntityManager();
+        EconomyModule economyModule = new EconomyModule(dbManager, scoreboardManager);
+        EconomyManager economyManager = economyModule.getEconomyManager();
 
-        getCommand("bal").setExecutor(new CommandExecutor(test));
+        GUIModule guiModule = new GUIModule(dbManager, itemManager, economyManager);
+
+
+        registerCommands(entityModule, economyModule, itemsModule, guiModule);
+        registerListeners(entityModule, economyModule, itemsModule, guiModule);
     }
 
-    private void initializeListeners(EconomyManager economyManager, ScoreboardManager scoreboardManager, CustomInventoryManager customInventoryManager, CustomInventoryActionManager customInventoryActionManager) {
-        PlayerJoinListener playerJoinListener = new PlayerJoinListener(economyManager, scoreboardManager);
-        InventoryClickListener inventoryClickListener = new InventoryClickListener(customInventoryManager, customInventoryActionManager);
+    private void registerCommands(AbstractModule... modules) {
+        CommandExecutor commandExecutor = new CommandExecutor(this);
 
-        ArrayList<Listener> listeners = new ArrayList<>();
-        listeners.add(playerJoinListener);
-        listeners.add(inventoryClickListener);
+        for (AbstractModule module : modules) {
+            for (AbstractCommand command : module.getCommands()) {
+                commandExecutor.registerCommand(command);
+            }
+        }
+    }
 
+    private void registerListeners(AbstractModule... modules) {
         PluginManager pluginManager = getServer().getPluginManager();
 
-        for (Listener listener : listeners) {
-            pluginManager.registerEvents(listener, this);
+        for (AbstractModule module : modules) {
+            for (Listener listener : module.getListeners()) {
+                pluginManager.registerEvents(listener, this);
+            }
         }
     }
 

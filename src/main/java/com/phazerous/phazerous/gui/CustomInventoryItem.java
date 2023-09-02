@@ -9,8 +9,8 @@ import java.util.List;
 public class CustomInventoryItem {
     private final ItemStack item;
     private final List<Integer> slots;
-    private final String actionId;
-    private final Double price;
+    private String actionId;
+    private Double price;
 
     public CustomInventoryItem(ItemStack item, List<Integer> slots, String actionId, Double price) {
         this.item = item;

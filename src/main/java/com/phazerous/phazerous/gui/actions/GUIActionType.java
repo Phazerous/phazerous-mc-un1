@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum GUIActionType {
-    TRADE("trade");
+    PURCHASE("purchase");
 
     private final String type;
 

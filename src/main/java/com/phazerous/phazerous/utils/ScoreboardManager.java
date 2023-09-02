@@ -15,11 +15,12 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public class ScoreboardManager implements IEconomySubscriber {
-    private final EconomyManager economyManager;
+    private EconomyManager economyManager;
     private final HashMap<UUID, Consumer<Double>> balanceSetters = new HashMap<>();
 
-    public ScoreboardManager(EconomyManager economyManager) {
+    public void setEconomyManager(EconomyManager economyManager) {
         this.economyManager = economyManager;
+        economyManager.subscribe(this);
     }
 
     public void createBoard(Player player) {
@@ -51,9 +52,7 @@ public class ScoreboardManager implements IEconomySubscriber {
         String entry = "§" + slot;
 
         team.addEntry(entry);
-        objective
-                .getScore(entry)
-                .setScore(slot);
+        objective.getScore(entry).setScore(slot);
 
         return team;
     }

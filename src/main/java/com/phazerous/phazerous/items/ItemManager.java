@@ -1,8 +1,11 @@
 package com.phazerous.phazerous.items;
 
-import com.phazerous.phazerous.items.models.ItemDto;
-import com.phazerous.phazerous.enums.RarityType;
+import com.phazerous.phazerous.db.enums.CollectionType;
+import com.phazerous.phazerous.db.utils.DocumentParser;
+import com.phazerous.phazerous.items.enums.RarityType;
 import com.phazerous.phazerous.db.DBManager;
+import com.phazerous.phazerous.items.models.CustomItem;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -12,7 +15,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ItemManager {
 
@@ -25,31 +27,27 @@ public class ItemManager {
 
     public ItemStack getItemById(ObjectId itemId) {
         if (!itemsHashmap.containsKey(itemId)) {
-            ItemDto itemDto = dbManager.getItemDtoById(itemId);
+            Document itemDoc = getItemDoc(itemId);
+            CustomItem item = DocumentParser.parseDocument(itemDoc, CustomItem.class);
 
-            String title = itemDto.getTitle();
-            Material material = Material.getMaterial(itemDto.getMaterialType());
-            byte additionalMaterialType = itemDto.getAdditionalMaterialType();
+            String title = item.getTitle();
+            Material material = Material.getMaterial(item.getMaterialType());
+            Integer additionalMaterialType = item.getAdditionalMaterialType();
 
-            ItemStack itemStack = additionalMaterialType == 0 ? new ItemStack(material) : new ItemStack(material, 1, additionalMaterialType);
+            ItemStack itemStack = additionalMaterialType == null ? new ItemStack(material) : new ItemStack(material, 1, additionalMaterialType.shortValue());
 
             ItemMeta itemMeta = itemStack.getItemMeta();
-            setItemDescription(itemMeta, title, itemDto.getRarityType());
+            setItemDescription(itemMeta, title, item.getRarityType());
             itemStack.setItemMeta(itemMeta);
 
             itemsHashmap.put(itemId, itemStack);
         }
 
-        return itemsHashmap
-                .get(itemId)
-                .clone();
+        return itemsHashmap.get(itemId).clone();
     }
 
-    public List<ItemStack> getItemsByIds(List<ObjectId> itemIds) {
-        return itemIds
-                .stream()
-                .map(this::getItemById)
-                .collect(Collectors.toList());
+    private Document getItemDoc(ObjectId itemId) {
+        return dbManager.getDocument(itemId, CollectionType.ITEMS);
     }
 
     private void setItemDescription(ItemMeta itemMeta, String title, RarityType rarityType) {

@@ -1,46 +1,39 @@
 package com.phazerous.phazerous.entities;
 
+import com.phazerous.phazerous.archtecture.AbstractModule;
 import com.phazerous.phazerous.db.DBManager;
-import com.phazerous.phazerous.entities.listeners.PlayerAttackEntityListener;
-import com.phazerous.phazerous.entities.listeners.PlayerInteractAtEntityListener;
+import com.phazerous.phazerous.entities.listeners.MobDeathListener;
+import com.phazerous.phazerous.entities.listeners.PlayerAttackCustomMobListener;
+import com.phazerous.phazerous.entities.listeners.PlayerInteractAtGatheringEntityListener;
+import com.phazerous.phazerous.entities.runtime.EntityRuntimeManager;
 import com.phazerous.phazerous.items.ItemManager;
-import com.phazerous.phazerous.utils.Scheduler;
-import lombok.Getter;
-import org.bukkit.World;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public class EntityModule {
-    private final JavaPlugin plugin;
-    @Getter // DELETE
-    private final EntityManager entityManager;
-    private final EntityTerminateManager entityTerminateManager;
-    private final Scheduler scheduler;
+public class EntityModule extends AbstractModule {
 
-    public EntityModule(JavaPlugin javaPlugin, DBManager dbManager, World world, ItemManager itemManager, Scheduler scheduler) {
-        this.plugin = javaPlugin;
-        this.scheduler = scheduler;
+    private final EntitySpawnManager entitySpawnManager;
 
-        this.entityManager = new EntityManager(dbManager, world);
-        entityTerminateManager = new EntityTerminateManager(dbManager, entityManager, itemManager, scheduler);
+    public EntityModule(DBManager dbManager, ItemManager itemManager) {
+        EntityManager entityManager = new EntityManager(dbManager);
 
-        registerListeners();
-    }
+        EntityRuntimeManager entityRuntimeManager = new EntityRuntimeManager(dbManager);
 
-    private void registerListeners() {
-        PluginManager pluginManager = plugin
-                .getServer()
-                .getPluginManager();
+        this.entitySpawnManager = new EntitySpawnManager(entityManager, entityRuntimeManager);
+        entitySpawnManager.subscribe(entityRuntimeManager);
 
-        pluginManager.registerEvents(new PlayerInteractAtEntityListener(entityManager, entityTerminateManager, scheduler), plugin);
-        pluginManager.registerEvents(new PlayerAttackEntityListener(entityManager, entityTerminateManager), plugin);
+
+        EntityTerminateManager entityTerminateManager = new EntityTerminateManager(dbManager, entityManager, itemManager, entitySpawnManager);
+
+        addListener(new PlayerAttackCustomMobListener(entityTerminateManager, entityRuntimeManager));
+        addListener(new PlayerInteractAtGatheringEntityListener(entityTerminateManager, entityRuntimeManager));
+        addListener(new MobDeathListener());
     }
 
     public void enable() {
-        entityManager.loadEntities();
+        entitySpawnManager.despawnEntities();
+        entitySpawnManager.spawnEntities();
     }
 
     public void disable() {
-        entityManager.unloadEntities();
+        entitySpawnManager.despawnEntities();
     }
 }

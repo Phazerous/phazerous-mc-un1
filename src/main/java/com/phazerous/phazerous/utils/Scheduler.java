@@ -28,27 +28,15 @@ public class Scheduler {
     }
 
     public int runInterval(Runnable functionToRun) {
-        return bukkitScheduler
-                .runTaskTimer(plugin, functionToRun, 20L, TICKS_IN_SECOND)
-                .getTaskId();
+        return bukkitScheduler.runTaskTimer(plugin, functionToRun, 20L, TICKS_IN_SECOND).getTaskId();
     }
 
     public int runInterval(Runnable functionToRun, long interval) {
-        return bukkitScheduler
-                .runTaskTimer(plugin, functionToRun, interval, interval)
-                .getTaskId();
+        return bukkitScheduler.runTaskTimer(plugin, functionToRun, interval, interval).getTaskId();
     }
 
-    public int runTaskLater(Runnable functionToRun, long timeLater) {
-        return bukkitScheduler
-                .runTaskLater(plugin, functionToRun, timeLater)
-                .getTaskId();
-    }
-
-    public void scheduleEntityRespawn(LocationedEntity locationedEntity, long respawnTime) {
-        runTaskLater(() -> EntityManager
-                .getInstance()
-                .respawnEntity(locationedEntity), respawnTime);
+    public void runTaskLater(Runnable functionToRun, long timeLater) {
+        bukkitScheduler.runTaskLater(plugin, functionToRun, timeLater).getTaskId();
     }
 
     public void cancelTask(int taskId) {

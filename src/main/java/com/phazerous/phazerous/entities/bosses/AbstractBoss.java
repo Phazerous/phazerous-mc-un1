@@ -19,7 +19,7 @@ public class AbstractBoss {
     protected List<ObjectId> minions;
 
     public void spawnBoss() {
-        LivingEntity bossEntity = (LivingEntity) entityManager.spawnMobEntity(location, bossModel);
-        this.boss = bossEntity;
+//        LivingEntity bossEntity = (LivingEntity) entityManager.spawnMobEntity(location, bossModel);
+//        this.boss = bossEntity;
     }
 }

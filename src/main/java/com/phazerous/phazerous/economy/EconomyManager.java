@@ -2,7 +2,7 @@ package com.phazerous.phazerous.economy;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import com.phazerous.phazerous.db.CollectionType;
+import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.economy.interfaces.IEconomySubscriber;
 import com.phazerous.phazerous.economy.models.PlayerBalance;
@@ -78,7 +78,9 @@ public class EconomyManager {
     }
 
     private void createVault(UUID playerUUID) {
-        dbManager.createPlayerBalance(playerUUID);
+        Document document = new Document().append("playerUUID", playerUUID).append("balance", 0.0d);
+
+        dbManager.insertDocument(document, CollectionType.PLAYERS_BALANCES);
     }
 
     public void subscribe(IEconomySubscriber subscriber) {

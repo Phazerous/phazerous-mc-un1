@@ -31,7 +31,7 @@ public class CustomInventory {
     private ItemStack prepareItem(ItemStack item, String actionId, Double price) {
         if (actionId == null) return item;
 
-        setItemPrice(item, price);
+        if (price != null) setItemPrice(item, price);
 
         return NBTEditor.setString(item, GUISharedConstants.ACTION_ID_NAME, actionId);
     }

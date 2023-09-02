@@ -4,7 +4,6 @@ import com.phazerous.phazerous.entities.EntityManager;
 import com.phazerous.phazerous.utils.NBTEditor;
 import com.phazerous.phazerous.utils.Scheduler;
 import org.bson.types.ObjectId;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
@@ -40,10 +39,7 @@ public class BossZombieKing extends AbstractBoss {
         Location currentLocation = boss.getLocation();
         Location targetLocation = location;
 
-        Vector direction = targetLocation
-                .toVector()
-                .subtract(currentLocation.toVector())
-                .normalize();
+        Vector direction = targetLocation.toVector().subtract(currentLocation.toVector()).normalize();
 
         boss.setVelocity(direction.multiply(2));
     }
@@ -61,7 +57,7 @@ public class BossZombieKing extends AbstractBoss {
         List<Entity> spawnedMinions = new ArrayList<>();
 
         for (ObjectId minionId : minions) {
-            spawnedMinions.add(entityManager.spawnEntity(minionId));
+//            spawnedMinions.add(entityManager.spawnEntity(minionId));
         }
 
         return spawnedMinions;
