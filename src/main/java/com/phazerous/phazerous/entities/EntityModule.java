@@ -5,12 +5,14 @@ import com.phazerous.phazerous.entities.listeners.PlayerAttackEntityListener;
 import com.phazerous.phazerous.entities.listeners.PlayerInteractAtEntityListener;
 import com.phazerous.phazerous.items.ItemManager;
 import com.phazerous.phazerous.utils.Scheduler;
+import lombok.Getter;
 import org.bukkit.World;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EntityModule {
     private final JavaPlugin plugin;
+    @Getter // DELETE
     private final EntityManager entityManager;
     private final EntityTerminateManager entityTerminateManager;
     private final Scheduler scheduler;

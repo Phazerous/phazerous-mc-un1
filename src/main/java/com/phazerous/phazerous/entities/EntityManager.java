@@ -6,10 +6,9 @@ import com.phazerous.phazerous.db.CollectionType;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.db.utils.DocumentBuilder;
 import com.phazerous.phazerous.db.utils.DocumentParser;
-import com.phazerous.phazerous.entities.models.entities.BaseEntity;
-import com.phazerous.phazerous.entities.models.entities.GatheringEntity;
-import com.phazerous.phazerous.entities.models.entities.LocationedEntity;
-import com.phazerous.phazerous.entities.models.entities.MobEntity;
+import com.phazerous.phazerous.entities.bosses.AbstractBoss;
+import com.phazerous.phazerous.entities.bosses.BossZombieKing;
+import com.phazerous.phazerous.entities.models.entities.*;
 import com.phazerous.phazerous.entities.models.runtime.RuntimeBaseEntity;
 import com.phazerous.phazerous.entities.models.runtime.RuntimeGatheringEntity;
 import com.phazerous.phazerous.entities.models.runtime.RuntimeMobEntity;
@@ -25,6 +24,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +37,7 @@ public class EntityManager {
     private final World world;
 
     private final HashMap<ObjectId, BaseEntity> entities = new HashMap<>();
+    private final HashMap<String, AbstractBoss> bosses = new HashMap<>();
 
     public EntityManager(DBManager dbManager, World world) {
         this.dbManager = dbManager;
@@ -44,34 +45,53 @@ public class EntityManager {
         EntityManager.entityManager = this;
     }
 
-    public Document spawnEntity(LocationedEntity locationedEntity) {
+    public Entity spawnEntity(ObjectId locationedEntity) {
+        LocationedEntity locationedEntityModel = getLocationedEntityById(locationedEntity);
+        return spawnEntity(locationedEntityModel);
+    }
+
+    public Entity spawnEntity(LocationedEntity locationedEntity) {
         final String ENTITY_TYPE_NAME = "entityType";
 
-        Location entityLocation = getEntityLocation(locationedEntity);
+        Location entityLocation = EntityUtils.getEntityLocation(locationedEntity);
         ObjectId entityId = locationedEntity.getEntityId();
         Document entityDoc = dbManager.getDocumentById(entityId, CollectionType.ENTITIES);
         Integer entityTypeCode = entityDoc.getInteger(ENTITY_TYPE_NAME);
         EntityType entityType = EntityType.fromInteger(entityTypeCode);
 
-        Document runtimeEntityDoc = null;
+        Entity entity = null;
 
-        if (entityType == EntityType.GATHERING_ENTITY) {
-            GatheringEntity gatheringEntity = getEntity(entityId, GatheringEntity.class);
-            runtimeEntityDoc = spawnGatheringEntity(entityLocation, gatheringEntity);
-        } else if (entityType == EntityType.MOB_ENTITY) {
+
+//        if (entityType == EntityType.GATHERING_ENTITY) {
+//            Document runtimeEntityDoc = null;
+
+//            GatheringEntity gatheringEntity = getEntity(entityId, GatheringEntity.class);
+//            runtimeEntityDoc = spawnGatheringEntity(entityLocation, gatheringEntity);
+
+//            return runtimeEntityDoc
+//                    .append("locationedEntityId", locationedEntity.get_id())
+//                    .append("entityType", entityTypeCode);
+        if (entityType == EntityType.MOB_ENTITY) {
             MobEntity mobEntity = getEntity(entityId, MobEntity.class);
-            runtimeEntityDoc = spawnMobEntity(entityLocation, mobEntity);
+            entity = spawnMobEntity(entityLocation, mobEntity);
+        } else if (entityType == EntityType.BOSS_ENTITY) {
+            BossEntity bossEntity = getEntity(entityId, BossEntity.class);
+
+            BossZombieKing abstractBoss = new BossZombieKing(this);
+            abstractBoss.setBossModel(bossEntity);
+            abstractBoss.setLocation(entityLocation);
+            abstractBoss.setMinions(bossEntity.getMinions());
+
+            bosses.put("ZOMBIE_KING", abstractBoss);
         }
 
-        return runtimeEntityDoc
-                .append("locationedEntityId", locationedEntity.get_id())
-                .append("entityType", entityTypeCode);
+        return entity;
     }
 
     public void respawnEntity(LocationedEntity locationedEntity) {
-        Document runtimeEntityDoc = spawnEntity(locationedEntity);
-
-        dbManager.insertDocument(runtimeEntityDoc, CollectionType.RUNTIME_ENTITY);
+//        Document runtimeEntityDoc = spawnEntity(locationedEntity);
+//
+//        dbManager.insertDocument(runtimeEntityDoc, CollectionType.RUNTIME_ENTITY);
     }
 
     public void loadEntities() {
@@ -84,11 +104,10 @@ public class EntityManager {
         List<Document> runtimeEntitiesDocs = new ArrayList<>();
 
         for (LocationedEntity locationedEntity : locationedEntities) {
-            Document runtimeEntityDoc = spawnEntity(locationedEntity);
-            runtimeEntitiesDocs.add(runtimeEntityDoc);
+            spawnEntity(locationedEntity);
         }
 
-        dbManager.insertDocuments(runtimeEntitiesDocs, CollectionType.RUNTIME_ENTITY);
+//        dbManager.insertDocuments(runtimeEntitiesDocs, CollectionType.RUNTIME_ENTITY);
     }
 
     public void unloadEntities() {
@@ -104,12 +123,6 @@ public class EntityManager {
                 .collect(Collectors.toList());
 
         dbManager.deleteDocuments(runtimeEntitiesIds, CollectionType.RUNTIME_ENTITY);
-    }
-
-    public void removeEntity(Entity entity, RuntimeBaseEntity runtimeBaseEntity) {
-        dbManager.deleteDocument(runtimeBaseEntity.get_id(), CollectionType.RUNTIME_ENTITY);
-
-        entity.remove();
     }
 
     public void removeEntityByUUID(UUID uuid) {
@@ -152,7 +165,7 @@ public class EntityManager {
      * @param mobEntity
      * @return Document of the mob runtime entity.
      */
-    private Document spawnMobEntity(Location location, MobEntity mobEntity) {
+    public Entity spawnMobEntity(Location location, MobEntity mobEntity) {
         org.bukkit.entity.EntityType mobType = org.bukkit.entity.EntityType.fromId(mobEntity.getMobType());
         Class<? extends Entity> mobClass = mobType.getEntityClass();
 
@@ -178,7 +191,10 @@ public class EntityManager {
         mobRuntimeEntity.setMaxHealth(mobEntity.getMaxHealth());
         mobRuntimeEntity.setTitle(mobEntity.getTitle());
 
-        return DocumentBuilder.buildDocument(mobRuntimeEntity);
+        Document mobRuntimeEntityDoc = DocumentBuilder.buildDocument(mobRuntimeEntity);
+        dbManager.insertDocument(mobRuntimeEntityDoc, CollectionType.RUNTIME_ENTITY);
+
+        return mob;
     }
 
     public <T extends BaseEntity> T getEntity(ObjectId entityId, Class<T> entityClass) {
@@ -195,14 +211,6 @@ public class EntityManager {
         Document locationedEntityDoc = dbManager.getDocumentById(id, CollectionType.LOCATIONED_ENTITIES);
 
         return DocumentParser.parseDocument(locationedEntityDoc, LocationedEntity.class);
-    }
-
-    private Location getEntityLocation(LocationedEntity locationedEntity) {
-        double x = locationedEntity.getX();
-        double y = locationedEntity.getY();
-        double z = locationedEntity.getZ();
-
-        return new Location(world, x, y, z);
     }
 
     /**
@@ -222,8 +230,8 @@ public class EntityManager {
     }
 
     public void spawnEntityAndInsert(LocationedEntity locationedEntity) {
-        Document runtimeEntityDoc = spawnEntity(locationedEntity);
-        dbManager.insertDocument(runtimeEntityDoc, CollectionType.RUNTIME_ENTITY);
+//        Document runtimeEntityDoc = spawnEntity(locationedEntity);
+//        dbManager.insertDocument(runtimeEntityDoc, CollectionType.RUNTIME_ENTITY);
     }
 
     public void updateRuntimeEntityHealth(ObjectId objectId, Long health) {
@@ -242,5 +250,9 @@ public class EntityManager {
                 .stream()
                 .map(it -> DocumentParser.parseDocument(it, RuntimeBaseEntity.class))
                 .collect(Collectors.toList());
+    }
+
+    public AbstractBoss getBoss() {
+        return bosses.get("ZOMBIE_KING");
     }
 }

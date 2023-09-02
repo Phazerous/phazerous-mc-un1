@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 public enum EntityType {
-    GATHERING_ENTITY(0, GatheringEntity.class, RuntimeGatheringEntity.class), MOB_ENTITY(1, MobEntity.class, RuntimeMobEntity.class);
+    GATHERING_ENTITY(0, GatheringEntity.class, RuntimeGatheringEntity.class), MOB_ENTITY(1, MobEntity.class, RuntimeMobEntity.class), BOSS_ENTITY(2, MobEntity.class, RuntimeMobEntity.class);
 
 
     private final Integer entityType;

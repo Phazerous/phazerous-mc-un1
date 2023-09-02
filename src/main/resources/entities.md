@@ -45,6 +45,18 @@ creatures, personalized armor stands, bosses, and more.
 }
 ```
 
+- ### BossEntity structure
+
+* ```
+  {
+       ...,
+       "minions: [ObjectId];
+  }
+  ```
+
+-
+   - Minions are LocationedEntities.
+
 <br />
 <br />
 <br />

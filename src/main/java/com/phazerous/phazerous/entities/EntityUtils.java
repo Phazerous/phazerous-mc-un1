@@ -1,7 +1,10 @@
 package com.phazerous.phazerous.entities;
 
+import com.phazerous.phazerous.entities.models.entities.LocationedEntity;
 import org.bson.Document;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
 public class EntityUtils {
@@ -45,5 +48,13 @@ public class EntityUtils {
         String ENTITY_TYPE_NAME = "entityType";
         Integer entityTypeCode = runtimeEntityDoc.getInteger(ENTITY_TYPE_NAME);
         return EntityType.fromInteger(entityTypeCode);
+    }
+
+    public static Location getEntityLocation(LocationedEntity locationedEntity) {
+        double x = locationedEntity.getX();
+        double y = locationedEntity.getY();
+        double z = locationedEntity.getZ();
+
+        return new Location(Bukkit.getWorld("world"), x, y, z);
     }
 }

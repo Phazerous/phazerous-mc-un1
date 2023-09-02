@@ -3,6 +3,7 @@ package com.phazerous.phazerous;
 import com.phazerous.phazerous.commands.CommandExecutor;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.economy.EconomyManager;
+import com.phazerous.phazerous.entities.EntityManager;
 import com.phazerous.phazerous.items.ItemManager;
 import com.phazerous.phazerous.utils.ScoreboardManager;
 import com.phazerous.phazerous.entities.EntityModule;
@@ -34,7 +35,7 @@ public class Phazerous extends JavaPlugin implements Listener {
 
     private void initialize() {
         DBManager dbManager = new DBManager();
-        Scheduler scheduler = new Scheduler(Bukkit.getScheduler(), this);
+        Scheduler scheduler = Scheduler.init(Bukkit.getScheduler(), this);
         ItemManager itemManager = new ItemManager(dbManager); // REFACTOR
         this.entityModule = new EntityModule(this, new DBManager(), getServer().getWorld("world"), itemManager, scheduler);
 
@@ -47,7 +48,10 @@ public class Phazerous extends JavaPlugin implements Listener {
         CustomInventoryActionManager customInventoryActionManager = new CustomInventoryActionManager(dbManager, economyManager, itemManager);
 
         initializeListeners(economyManager, scoreboardManager, customInventoryManager, customInventoryActionManager);
-        registerCommands(economyManager, customInventoryManager);
+
+        EntityManager test = entityModule.getEntityManager();
+
+        getCommand("bal").setExecutor(new CommandExecutor(test));
     }
 
     private void initializeListeners(EconomyManager economyManager, ScoreboardManager scoreboardManager, CustomInventoryManager customInventoryManager, CustomInventoryActionManager customInventoryActionManager) {
@@ -63,10 +67,6 @@ public class Phazerous extends JavaPlugin implements Listener {
         for (Listener listener : listeners) {
             pluginManager.registerEvents(listener, this);
         }
-    }
-
-    private void registerCommands(EconomyManager economyManager, CustomInventoryManager customInventoryManager) {
-        getCommand("bal").setExecutor(new CommandExecutor(economyManager, customInventoryManager));
     }
 
     @Override
