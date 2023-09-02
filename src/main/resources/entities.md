@@ -42,6 +42,7 @@ creatures, personalized armor stands, bosses, and more.
    "mobType": Int32,
    "maxHealth": Int64;
    "attack": Int64;
+   "moneyReward": MoneyReward;
 }
 ```
 
@@ -77,3 +78,14 @@ creatures, personalized armor stands, bosses, and more.
 - The dropChance is a value between 0 and 1, where 0 is 0% and 1 is 100%.
 
 - If the dropChance not provided, then the item will be drop 100% of the time.
+
+---
+
+### MoneyReward
+
+```
+{
+   "min": Double;
+   "max": Double;
+}
+```

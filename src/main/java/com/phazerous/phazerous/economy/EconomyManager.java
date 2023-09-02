@@ -64,6 +64,14 @@ public class EconomyManager {
         return playerBalance.getBalance();
     }
 
+    public void deposit(UUID playerUUID, double amount) {
+        double balance = getPlayerBalanceByUUID(playerUUID);
+        double newBalance = balance + amount;
+
+        setPlayerBalance(playerUUID, newBalance);
+        handleBalanceChange(playerUUID, newBalance);
+    }
+
     public void validatePlayerBalance(UUID playerUUID) {
         if (!hasVault(playerUUID)) {
             createVault(playerUUID);

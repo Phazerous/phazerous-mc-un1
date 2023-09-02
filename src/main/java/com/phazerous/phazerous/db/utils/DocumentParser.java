@@ -31,9 +31,7 @@ public class DocumentParser {
 
                             if (rawType == List.class) {
                                 List<?> documentList = (List<?>) document.get(fieldName);
-                                List<Object> newList = (List<Object>) documentList
-                                        .getClass()
-                                        .newInstance();
+                                List<Object> newList = (List<Object>) documentList.getClass().newInstance();
 
                                 for (Object object : documentList) {
                                     if (object instanceof Document) {
@@ -48,7 +46,10 @@ public class DocumentParser {
                             }
                         }
                     } else {
-                        Object fieldValue = document.get(fieldName, type);
+                        Object fieldValue = document.get(fieldName);
+
+                        if (fieldValue instanceof Document) fieldValue = parseDocument((Document) fieldValue, type);
+
                         field.set(instance, fieldValue);
                     }
                 }

@@ -36,12 +36,12 @@ public class Phazerous extends JavaPlugin implements Listener {
         ItemsModule itemsModule = new ItemsModule(dbManager);
         ItemManager itemManager = itemsModule.getItemManager();
 
-        this.entityModule = new EntityModule(dbManager, itemManager);
-
         ScoreboardManager scoreboardManager = new ScoreboardManager();
 
         EconomyModule economyModule = new EconomyModule(dbManager, scoreboardManager);
         EconomyManager economyManager = economyModule.getEconomyManager();
+
+        this.entityModule = new EntityModule(dbManager, itemManager, economyManager);
 
         GUIModule guiModule = new GUIModule(dbManager, itemManager, economyManager);
 
