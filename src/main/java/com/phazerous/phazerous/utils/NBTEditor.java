@@ -55,4 +55,24 @@ public class NBTEditor {
 
         nmsEntity.f(tag);
     }
+
+    public static void setNoGravity(Entity entity, boolean enabled) {
+        net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity) entity).getHandle();
+        NBTTagCompound tag = new NBTTagCompound();
+        nmsEntity.c(tag);
+
+        tag.setByte("NoGravity", (byte) (enabled ? 1 : 0));
+
+        nmsEntity.f(tag);
+    }
+
+    public static void setInvulnerable(Entity entity, boolean enabled) {
+        net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity) entity).getHandle();
+        NBTTagCompound tag = new NBTTagCompound();
+        nmsEntity.c(tag);
+
+        tag.setByte("Invulnerable", (byte) (enabled ? 1 : 0));
+
+        nmsEntity.f(tag);
+    }
 }

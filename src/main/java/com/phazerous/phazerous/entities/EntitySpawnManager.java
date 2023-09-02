@@ -1,16 +1,15 @@
 package com.phazerous.phazerous.entities;
 
 import com.phazerous.phazerous.db.utils.DocumentParser;
+import com.phazerous.phazerous.entities.bosses.BossManager;
 import com.phazerous.phazerous.entities.enums.EntityType;
 import com.phazerous.phazerous.entities.interfaces.IEntitySpawnSubscriber;
-import com.phazerous.phazerous.entities.models.entities.BaseEntity;
-import com.phazerous.phazerous.entities.models.entities.GatheringEntity;
-import com.phazerous.phazerous.entities.models.entities.LocationedEntity;
-import com.phazerous.phazerous.entities.models.entities.MobEntity;
+import com.phazerous.phazerous.entities.models.entities.*;
 import com.phazerous.phazerous.entities.runtime.models.RuntimeBaseEntity;
 import com.phazerous.phazerous.entities.runtime.EntityRuntimeManager;
 import com.phazerous.phazerous.entities.utils.EntityUtils;
 import com.phazerous.phazerous.utils.NBTEditor;
+import lombok.Setter;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
@@ -31,9 +30,17 @@ public class EntitySpawnManager {
     private final EntityRuntimeManager entityRuntimeManager;
     private final List<IEntitySpawnSubscriber> subscribers = new ArrayList<>();
 
+    @Setter
+    private BossManager bossManager;
+
     public EntitySpawnManager(EntityManager entityManager, EntityRuntimeManager entityRuntimeManager) {
         this.entityManager = entityManager;
         this.entityRuntimeManager = entityRuntimeManager;
+    }
+
+    public Entity spawnEntity(ObjectId locationedEntityId) {
+        LocationedEntity locationedEntity = entityManager.getLocationedEntityById(locationedEntityId);
+        return spawnEntity(locationedEntity);
     }
 
     public Entity spawnEntity(LocationedEntity locationedEntity) {
@@ -53,12 +60,23 @@ public class EntitySpawnManager {
         } else if (entityType == EntityType.MOB_ENTITY) {
             entity = spawnMobEntity(entityLocation, (MobEntity) parsedEntity);
         } else if (entityType == EntityType.BOSS_ENTITY) {
+            bossManager.saveBossModel(locationedEntity, (BossEntity) parsedEntity);
             return null;
         }
 
         NBTEditor.setEntityPersistenceRequired(entity);
 
         handleSpawn(entity.getUniqueId(), parsedEntity, locationedEntity.get_id());
+
+        return entity;
+    }
+
+    public Entity spawnBoss(LocationedEntity locationedEntity, BossEntity bossEntity) {
+        Location location = EntityUtils.getEntityLocation(locationedEntity);
+
+        Entity entity = spawnMobEntity(location, bossEntity);
+
+        handleSpawn(entity.getUniqueId(), bossEntity, locationedEntity.get_id());
 
         return entity;
     }
@@ -85,6 +103,8 @@ public class EntitySpawnManager {
 
         EntityUtils.setMobEntityHPTitle(mob, mobEntity.getTitle(), mobEntity.getMaxHealth(), mobEntity.getMaxHealth());
         mob.setCustomNameVisible(true);
+
+        NBTEditor.setNoGravity(mob, true);
 
         ((LivingEntity) mob).getEquipment().setHelmet(new ItemStack(Material.STONE_BUTTON)); // SUNSCREEN
 

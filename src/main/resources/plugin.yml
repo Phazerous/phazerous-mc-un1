@@ -8,3 +8,5 @@ commands:
     usage: /<command>
   test:
     usage: /<command>
+  spawnentity:
+    usage: /<command>

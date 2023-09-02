@@ -3,10 +3,11 @@ package com.phazerous.phazerous.entities;
 import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.db.utils.DocumentParser;
-import com.phazerous.phazerous.entities.bosses.AbstractBoss;
+import com.phazerous.phazerous.entities.bosses.models.AbstractBoss;
 import com.phazerous.phazerous.entities.models.entities.BaseEntity;
 import com.phazerous.phazerous.entities.models.entities.LocationedEntity;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.HashMap;

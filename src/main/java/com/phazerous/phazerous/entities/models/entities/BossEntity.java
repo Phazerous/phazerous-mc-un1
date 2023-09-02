@@ -7,5 +7,5 @@ import java.util.List;
 
 @Getter
 public class BossEntity extends MobEntity {
-    private List<ObjectId> minions;
+    private List<ObjectId> minionsIds;
 }

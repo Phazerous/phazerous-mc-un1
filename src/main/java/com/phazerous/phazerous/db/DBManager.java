@@ -116,6 +116,14 @@ public class DBManager {
         collection.updateOne(filter, update);
     }
 
+    public void clearCollection(CollectionType collectionType) {
+        String collectionName = collectionType.getCollectionName();
+
+        MongoCollection<Document> collection = getCollection(collectionName);
+
+        collection.deleteMany(new Document());
+    }
+
     private MongoCollection<Document> getCollection(String collectionName) {
         return database.getCollection(collectionName);
     }
