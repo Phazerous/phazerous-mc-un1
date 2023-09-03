@@ -6,8 +6,8 @@ import org.bson.types.ObjectId;
 
 @Getter
 @Setter
-public class CustomInventoryAction {
-    private String type;
-    private ObjectId itemId;
-    private Double price;
+public abstract class AbstractGUIAction {
+    private ObjectId _id;
+
+    private Integer type;
 }

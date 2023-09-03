@@ -1,9 +1,13 @@
-package com.phazerous.phazerous.gui;
+package com.phazerous.phazerous.gui.managers;
 
 import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.utils.DocumentParser;
-import com.phazerous.phazerous.gui.models.CustomInventoryDesc;
-import com.phazerous.phazerous.gui.models.CustomInventoryItemDesc;
+import com.phazerous.phazerous.gui.actions.GUIActionManager;
+import com.phazerous.phazerous.gui.actions.models.AbstractGUIAction;
+import com.phazerous.phazerous.gui.models.CustomInventory;
+import com.phazerous.phazerous.gui.models.CustomInventoryItem;
+import com.phazerous.phazerous.gui.models.db.GUIInventory;
+import com.phazerous.phazerous.gui.models.db.GUIItem;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.items.ItemManager;
 import org.bson.Document;
@@ -19,19 +23,21 @@ import java.util.stream.Collectors;
 public class GUIManager {
     private final DBManager dbManager;
     private final ItemManager itemManager;
+    private final GUIActionManager actionManager;
     private final HashMap<ObjectId, Inventory> inventories = new HashMap<>();
 
 
-    public GUIManager(DBManager dbManager, ItemManager itemManager) {
+    public GUIManager(DBManager dbManager, ItemManager itemManager, GUIActionManager actionManager) {
         this.dbManager = dbManager;
         this.itemManager = itemManager;
+        this.actionManager = actionManager;
     }
 
     private void createInventory(ObjectId inventoryId) {
-        Document inventoryDoc = dbManager.getDocument(inventoryId, CollectionType.CUSTOM_INVENTORIES);
-        CustomInventoryDesc inventoryModel = DocumentParser.parseDocument(inventoryDoc, CustomInventoryDesc.class);
+        Document inventoryDoc = dbManager.getDocument(inventoryId, CollectionType.GUI_INVENTORIES);
+        GUIInventory inventoryModel = DocumentParser.parseDocument(inventoryDoc, GUIInventory.class);
 
-        List<CustomInventoryItemDesc> contentsModel = inventoryModel.getContents();
+        List<GUIItem> contentsModel = inventoryModel.getContents();
         int size = inventoryModel.getSize();
         String title = inventoryModel.getTitle();
 
@@ -43,19 +49,14 @@ public class GUIManager {
         inventories.put(inventoryId, inventory);
     }
 
-    private List<CustomInventoryItem> parseCustomInventoryItems(List<CustomInventoryItemDesc> itemDtos) {
+    private List<CustomInventoryItem> parseCustomInventoryItems(List<GUIItem> itemDtos) {
         return itemDtos.stream().map(it -> {
             List<Integer> slots = it.getSlots();
             ItemStack itemStack = itemManager.getItemById(it.getItemId());
 
-            ObjectId actionId = it.getActionId();
-            String actionIdString = null;
+            AbstractGUIAction action = actionManager.getAction(it.getActionId());
 
-            Double price = it.getPrice();
-
-            if (actionId != null) actionIdString = actionId.toHexString();
-
-            return new CustomInventoryItem(itemStack, slots, actionIdString, price);
+            return new CustomInventoryItem(itemStack, slots, action);
         }).collect(Collectors.toList());
     }
 

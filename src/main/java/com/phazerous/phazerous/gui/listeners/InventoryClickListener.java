@@ -1,7 +1,8 @@
 package com.phazerous.phazerous.gui.listeners;
 
-import com.phazerous.phazerous.gui.GUIManager;
+import com.phazerous.phazerous.gui.managers.GUIManager;
 import com.phazerous.phazerous.gui.actions.GUIActionManager;
+import org.bson.types.ObjectId;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,6 +32,9 @@ public class InventoryClickListener implements Listener {
 
         Player player = (Player) event.getWhoClicked();
 
-        if (GUIActionManager.hasAction(item)) GUIActionManager.executeAction(item, player);
+        if (GUIActionManager.hasAction(item)) {
+            ObjectId actionId = GUIActionManager.getActionId(item);
+            GUIActionManager.executeAction(actionId, player);
+        }
     }
 }

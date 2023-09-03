@@ -44,6 +44,8 @@ public class PlayerAttackCustomMobListener implements Listener {
         Document runtimeEntityDoc = entityRuntimeManager.getRuntimeEntityDoc(entityUUID);
         if (runtimeEntityDoc == null) return;
 
+        event.setDamage(0);
+
         EntityType entityType = EntityUtils.getEntityType(runtimeEntityDoc);
         if (!(entityType == EntityType.MOB_ENTITY || entityType == EntityType.BOSS_ENTITY)) return;
 

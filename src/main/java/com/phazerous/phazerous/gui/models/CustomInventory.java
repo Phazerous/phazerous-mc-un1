@@ -1,7 +1,13 @@
-package com.phazerous.phazerous.gui;
+package com.phazerous.phazerous.gui.models;
 
+import com.phazerous.phazerous.gui.GUISharedConstants;
+import com.phazerous.phazerous.gui.actions.models.AbstractGUIAction;
+import com.phazerous.phazerous.gui.actions.models.PurchaseItemAction;
+import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithMoneyAction;
+import com.phazerous.phazerous.gui.models.CustomInventoryItem;
 import com.phazerous.phazerous.utils.NBTEditor;
 import lombok.Getter;
+import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
@@ -22,18 +28,23 @@ public class CustomInventory {
     public void setContents(List<CustomInventoryItem> contents) {
         for (CustomInventoryItem item : contents) {
             for (Integer slot : item.getSlots()) {
-                ItemStack preparedItem = prepareItem(item.getItem(), item.getActionId(), item.getPrice());
+                ItemStack preparedItem = prepareItem(item.getItem(), item.getAction());
                 inventory.setItem(slot, preparedItem);
             }
         }
     }
 
-    private ItemStack prepareItem(ItemStack item, String actionId, Double price) {
-        if (actionId == null) return item;
+    private ItemStack prepareItem(ItemStack item, AbstractGUIAction action) {
+        if (action == null) return item;
 
-        if (price != null) setItemPrice(item, price);
+        if (action instanceof PurchaseItemWithMoneyAction) {
+            PurchaseItemWithMoneyAction purchaseItemWithMoneyAction = (PurchaseItemWithMoneyAction) action;
+            Double price = purchaseItemWithMoneyAction.getPrice();
 
-        return NBTEditor.setString(item, GUISharedConstants.ACTION_ID_NAME, actionId);
+            setItemPrice(item, price);
+        }
+
+        return NBTEditor.setString(item, GUISharedConstants.ACTION_ID_NAME, action.get_id().toHexString());
     }
 
     private void setItemPrice(ItemStack item, Double price) {

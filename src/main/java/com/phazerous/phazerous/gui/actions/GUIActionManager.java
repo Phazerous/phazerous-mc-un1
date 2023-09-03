@@ -4,8 +4,9 @@ import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.gui.GUISharedConstants;
-import com.phazerous.phazerous.gui.actions.models.CustomInventoryAction;
+import com.phazerous.phazerous.gui.actions.models.AbstractGUIAction;
 import com.phazerous.phazerous.economy.EconomyManager;
+import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithMoneyAction;
 import com.phazerous.phazerous.items.ItemManager;
 import com.phazerous.phazerous.utils.NBTEditor;
 import org.bson.Document;
@@ -28,25 +29,45 @@ public class GUIActionManager {
         return NBTEditor.hasString(item, GUISharedConstants.ACTION_ID_NAME);
     }
 
-    public void executeAction(ItemStack item, Player player) {
-        String actionId = NBTEditor.getString(item, GUISharedConstants.ACTION_ID_NAME);
-
-        Document actionDoc = dbManager.getDocument(new ObjectId(actionId), CollectionType.CUSTOM_INVENTORIES_ACTIONS);
-        CustomInventoryAction action = DocumentParser.parseDocument(actionDoc, CustomInventoryAction.class);
-
-        GUIActionType actionType = GUIActionType.fromString(action.getType());
-
-        if (actionType == GUIActionType.PURCHASE) executePurchaseAction(action, player);
+    public ObjectId getActionId(ItemStack item) {
+        String actionIdString = NBTEditor.getString(item, GUISharedConstants.ACTION_ID_NAME);
+        return new ObjectId(actionIdString);
     }
 
-    private void executePurchaseAction(CustomInventoryAction action, Player player) {
-        double price = action.getPrice();
+    public void executeAction(ObjectId actionId, Player player) {
+        AbstractGUIAction action = getAction(actionId);
+
+        if (action instanceof PurchaseItemWithMoneyAction)
+            executePurchaseItemWithMoneyAction((PurchaseItemWithMoneyAction) action, player);
+    }
+
+
+    public AbstractGUIAction getAction(ObjectId actionId) {
+        Document actionDoc = dbManager.getDocument(actionId, CollectionType.GUI_ACTIONS);
+
+        if (actionDoc == null) return null;
+
+        GUIActionType actionType = getActionType(actionDoc);
+
+        return DocumentParser.parseDocument(actionDoc, actionType.getActionSchema());
+    }
+
+    private void executePurchaseItemWithMoneyAction(PurchaseItemWithMoneyAction action, Player player) {
+        Double price = action.getPrice();
 
         if (!(economyManager.withdraw(player.getUniqueId(), price))) return;
 
-        ObjectId itemId = action.getItemId();
+        ObjectId itemId = action.getItemIdToPurchase();
         ItemStack item = itemManager.getItemById(itemId);
 
         player.getInventory().addItem(item);
+    }
+
+    private GUIActionType getActionType(Document document) {
+        final String ACTION_TYPE_NAME = "type";
+
+        Integer type = document.getInteger(ACTION_TYPE_NAME);
+
+        return GUIActionType.fromInteger(type);
     }
 }
