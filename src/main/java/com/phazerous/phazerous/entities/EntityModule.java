@@ -6,6 +6,7 @@ import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.economy.EconomyManager;
 import com.phazerous.phazerous.entities.bosses.BossManager;
 import com.phazerous.phazerous.entities.commands.SpawnEntityCommand;
+import com.phazerous.phazerous.entities.listeners.CustomMobAttackPlayerListener;
 import com.phazerous.phazerous.entities.listeners.MobDeathListener;
 import com.phazerous.phazerous.entities.listeners.PlayerAttackCustomMobListener;
 import com.phazerous.phazerous.entities.listeners.PlayerInteractAtGatheringEntityListener;
@@ -40,6 +41,7 @@ public class EntityModule extends AbstractModule {
         addListener(playerAttackCustomMobListener);
         addListener(new PlayerInteractAtGatheringEntityListener(entityTerminateManager, entityRuntimeManager));
         addListener(new MobDeathListener());
+        addListener(new CustomMobAttackPlayerListener(entityManager, entityRuntimeManager));
 
         addCommand(new SpawnEntityCommand(bossManager));
     }
@@ -47,7 +49,7 @@ public class EntityModule extends AbstractModule {
     public void enable() {
         entitySpawnManager.despawnEntities();
         dbManager.clearCollection(CollectionType.RUNTIME_ENTITIES);
-        
+
         entitySpawnManager.spawnEntities();
     }
 

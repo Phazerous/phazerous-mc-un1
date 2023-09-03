@@ -9,5 +9,5 @@ public class RuntimeMobEntity extends RuntimeBaseEntity {
     private String title;
     private Long health;
     private Long maxHealth;
-    private Double attack;
+    private Long attack;
 }
