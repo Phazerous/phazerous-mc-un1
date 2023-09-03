@@ -12,6 +12,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -76,6 +77,8 @@ public class ItemManager {
     }
 
     private void setItemDescription(ItemMeta itemMeta, String title, RarityType rarityType) {
+        itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES); // HIDE +1 ATTACK DAMAGE, ETC.
+
         String color = rarityType.getColor();
 
         String formattedTitle = ChatColor.translateAlternateColorCodes('§', "§r" + color + title);
