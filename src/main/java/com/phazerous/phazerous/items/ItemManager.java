@@ -2,11 +2,12 @@ package com.phazerous.phazerous.items;
 
 import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.utils.DocumentParser;
+import com.phazerous.phazerous.items.enums.ItemType;
 import com.phazerous.phazerous.items.enums.RarityType;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.items.models.CustomItem;
+import com.phazerous.phazerous.items.models.GatheringItem;
 import com.phazerous.phazerous.items.utils.ItemUtils;
-import com.phazerous.phazerous.utils.NBTEditor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -30,7 +31,9 @@ public class ItemManager {
     public ItemStack getItemById(ObjectId itemId) {
         if (!itemsHashmap.containsKey(itemId)) {
             Document itemDoc = getItemDoc(itemId);
-            CustomItem item = DocumentParser.parseDocument(itemDoc, CustomItem.class);
+            ItemType itemType = getItemType(itemDoc);
+
+            CustomItem item = DocumentParser.parseDocument(itemDoc, itemType.getItemClass());
 
             String title = item.getTitle();
             Material material = Material.getMaterial(item.getMaterialType());
@@ -42,12 +45,25 @@ public class ItemManager {
             setItemDescription(itemMeta, title, item.getRarityType());
             itemStack.setItemMeta(itemMeta);
 
-            ItemStack finalItemStack = ItemUtils.setItemId(itemStack, itemId.toHexString());
+            itemStack = ItemUtils.setItemId(itemStack, itemId.toHexString());
+            itemStack = ItemUtils.setItemType(itemStack, itemType);
 
-            itemsHashmap.put(itemId, finalItemStack);
+            if (itemType == ItemType.GATHERING_DIGGING) {
+                itemStack = ItemUtils.setItemSpeed(itemStack, ((GatheringItem) item).getSpeed());
+            }
+
+
+            itemsHashmap.put(itemId, itemStack);
         }
 
         return itemsHashmap.get(itemId).clone();
+    }
+
+    private ItemType getItemType(Document itemDoc) {
+        final String ITEM_TYPE_STRING = "itemType";
+
+        Integer itemTypeCode = itemDoc.getInteger(ITEM_TYPE_STRING);
+        return ItemType.getItemTypeByValue(itemTypeCode);
     }
 
     public String getItemTitle(ObjectId itemId) {

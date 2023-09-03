@@ -13,6 +13,7 @@ public class CustomItem {
 
     private String title;
     private Integer type;
+
     private Integer materialType;
     private Integer additionalMaterialType;
 

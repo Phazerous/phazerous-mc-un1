@@ -28,7 +28,8 @@ public class Scheduler {
     }
 
     public int runInterval(Runnable functionToRun) {
-        return bukkitScheduler.runTaskTimer(plugin, functionToRun, 20L, TICKS_IN_SECOND).getTaskId();
+        return bukkitScheduler.runTaskTimer(plugin, functionToRun, TICKS_IN_SECOND, TICKS_IN_SECOND)
+                .getTaskId(); // RUN AFTER 1 SECOND, THEN EVERY 1 SECOND
     }
 
     public int runInterval(Runnable functionToRun, long interval) {

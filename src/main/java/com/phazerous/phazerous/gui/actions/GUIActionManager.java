@@ -28,7 +28,7 @@ public class GUIActionManager {
     }
 
     public boolean hasAction(ItemStack item) {
-        return NBTEditor.hasString(item, GUISharedConstants.ACTION_ID_NAME);
+        return NBTEditor.hasKey(item, GUISharedConstants.ACTION_ID_NAME);
     }
 
     public ObjectId getActionId(ItemStack item) {

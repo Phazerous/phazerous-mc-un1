@@ -16,7 +16,29 @@ public class NBTEditor {
         return CraftItemStack.asBukkitCopy(nmsItem);
     }
 
-    public static boolean hasString(ItemStack item, String key) {
+    public static Long getLong(ItemStack item, String key) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        NBTTagCompound compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new NBTTagCompound();
+        return compound.getLong(key);
+    }
+
+    public static ItemStack setLong(ItemStack item, String key, Long value) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        NBTTagCompound compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new NBTTagCompound();
+        compound.setLong(key, value);
+        nmsItem.setTag(compound);
+        return CraftItemStack.asBukkitCopy(nmsItem);
+    }
+
+    public static ItemStack setInteger(ItemStack item, String key, Integer value) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        NBTTagCompound compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new NBTTagCompound();
+        compound.setInt(key, value);
+        nmsItem.setTag(compound);
+        return CraftItemStack.asBukkitCopy(nmsItem);
+    }
+
+    public static boolean hasKey(ItemStack item, String key) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
         NBTTagCompound compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new NBTTagCompound();
         return compound.hasKey(key);
@@ -27,6 +49,12 @@ public class NBTEditor {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
         NBTTagCompound compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new NBTTagCompound();
         return compound.getString(key);
+    }
+
+    public static Integer getInteger(ItemStack item, String key) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        NBTTagCompound compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new NBTTagCompound();
+        return compound.getInt(key);
     }
 
     public static void setEntityPersistenceRequired(Entity entity) {
