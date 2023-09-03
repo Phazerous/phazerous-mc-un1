@@ -57,6 +57,7 @@ public class DocumentParser {
             }
             return instance;
         } catch (Exception e) {
+            System.out.println("ERROR: In DocumentParser.parseDocument");
             e.printStackTrace();
             return null;
         }

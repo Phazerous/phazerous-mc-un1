@@ -1,12 +1,13 @@
 package com.phazerous.phazerous.gui.actions;
 
 import com.phazerous.phazerous.gui.actions.models.AbstractGUIAction;
+import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithItemAction;
 import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithMoneyAction;
 import lombok.Getter;
 
 @Getter
 public enum GUIActionType {
-    PURCHASE_ITEM_WITH_MONEY(1, PurchaseItemWithMoneyAction.class);
+    PURCHASE_ITEM_WITH_MONEY(1, PurchaseItemWithMoneyAction.class), PURCHASE_ITEM_WITH_ITEM(2, PurchaseItemWithItemAction.class);
 
     private final Integer type;
     private final Class<? extends AbstractGUIAction> actionSchemaModel;

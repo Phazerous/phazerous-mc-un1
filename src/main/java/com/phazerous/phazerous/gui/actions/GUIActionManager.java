@@ -6,8 +6,10 @@ import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.gui.GUISharedConstants;
 import com.phazerous.phazerous.gui.actions.models.AbstractGUIAction;
 import com.phazerous.phazerous.economy.EconomyManager;
+import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithItemAction;
 import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithMoneyAction;
 import com.phazerous.phazerous.items.ItemManager;
+import com.phazerous.phazerous.utils.InventoryUtils;
 import com.phazerous.phazerous.utils.NBTEditor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -39,6 +41,8 @@ public class GUIActionManager {
 
         if (action instanceof PurchaseItemWithMoneyAction)
             executePurchaseItemWithMoneyAction((PurchaseItemWithMoneyAction) action, player);
+        else if (action instanceof PurchaseItemWithItemAction)
+            execturePurchaseItemWithItemAction((PurchaseItemWithItemAction) action, player);
     }
 
 
@@ -49,7 +53,16 @@ public class GUIActionManager {
 
         GUIActionType actionType = getActionType(actionDoc);
 
-        return DocumentParser.parseDocument(actionDoc, actionType.getActionSchema());
+        AbstractGUIAction abstractGUIAction = DocumentParser.parseDocument(actionDoc, actionType.getActionSchema());
+
+        if (actionType == GUIActionType.PURCHASE_ITEM_WITH_ITEM) {
+            PurchaseItemWithItemAction purchaseItemWithItemAction = (PurchaseItemWithItemAction) abstractGUIAction;
+            ObjectId requestedItemId = purchaseItemWithItemAction.getRequestedItemId();
+            String requestedItemTitle = itemManager.getItemTitle(requestedItemId);
+            purchaseItemWithItemAction.setRequestedItemName(requestedItemTitle);
+        }
+
+        return abstractGUIAction;
     }
 
     private void executePurchaseItemWithMoneyAction(PurchaseItemWithMoneyAction action, Player player) {
@@ -61,6 +74,20 @@ public class GUIActionManager {
         ItemStack item = itemManager.getItemById(itemId);
 
         player.getInventory().addItem(item);
+    }
+
+    private void execturePurchaseItemWithItemAction(PurchaseItemWithItemAction action, Player player) {
+        ObjectId requestedItemId = action.getRequestedItemId();
+        Integer amount = action.getAmount();
+
+        if (InventoryUtils.countItemsInInventory(player, requestedItemId) < amount) return;
+
+        if (!InventoryUtils.withdrawItemsFromInventory(player, requestedItemId, amount)) return;
+
+        ObjectId itemIdToPurchase = action.getItemIdToPurchase();
+        ItemStack purchasedItem = itemManager.getItemById(itemIdToPurchase);
+
+        player.getInventory().addItem(purchasedItem);
     }
 
     private GUIActionType getActionType(Document document) {

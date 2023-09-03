@@ -4,6 +4,7 @@ import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.gui.actions.GUIActionManager;
 import com.phazerous.phazerous.gui.actions.models.AbstractGUIAction;
+import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithItemAction;
 import com.phazerous.phazerous.gui.models.CustomInventory;
 import com.phazerous.phazerous.gui.models.CustomInventoryItem;
 import com.phazerous.phazerous.gui.models.db.GUIInventory;

@@ -2,9 +2,8 @@ package com.phazerous.phazerous.gui.models;
 
 import com.phazerous.phazerous.gui.GUISharedConstants;
 import com.phazerous.phazerous.gui.actions.models.AbstractGUIAction;
-import com.phazerous.phazerous.gui.actions.models.PurchaseItemAction;
+import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithItemAction;
 import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithMoneyAction;
-import com.phazerous.phazerous.gui.models.CustomInventoryItem;
 import com.phazerous.phazerous.utils.NBTEditor;
 import lombok.Getter;
 import org.bson.types.ObjectId;
@@ -41,13 +40,19 @@ public class CustomInventory {
             PurchaseItemWithMoneyAction purchaseItemWithMoneyAction = (PurchaseItemWithMoneyAction) action;
             Double price = purchaseItemWithMoneyAction.getPrice();
 
-            setItemPrice(item, price);
+            setPrice(item, price);
+        } else if (action instanceof PurchaseItemWithItemAction) {
+            PurchaseItemWithItemAction purchaseItemWithItemAction = (PurchaseItemWithItemAction) action;
+            String requestedItemTitle = purchaseItemWithItemAction.getRequestedItemName();
+            Integer amount = purchaseItemWithItemAction.getAmount();
+
+            setRequiredItems(item, requestedItemTitle, amount);
         }
 
         return NBTEditor.setString(item, GUISharedConstants.ACTION_ID_NAME, action.get_id().toHexString());
     }
 
-    private void setItemPrice(ItemStack item, Double price) {
+    private void setPrice(ItemStack item, Double price) {
         if (price == null) return;
 
         ItemMeta meta = item.getItemMeta();
@@ -62,6 +67,22 @@ public class CustomInventory {
 
         meta.setLore(lore);
 
+        item.setItemMeta(meta);
+    }
+
+    private void setRequiredItems(ItemStack item, String requestedItemTitle, Integer amount) {
+        ItemMeta meta = item.getItemMeta();
+
+        List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+
+        String requiredItemsTemplate = "§r§5Required Items:";
+        String requiredItemString = String.format("§r§5x%d %s", amount, requestedItemTitle);
+
+        lore.add(null); // Add an empty line
+        lore.add(requiredItemsTemplate);
+        lore.add(requiredItemString);
+
+        meta.setLore(lore);
         item.setItemMeta(meta);
     }
 }

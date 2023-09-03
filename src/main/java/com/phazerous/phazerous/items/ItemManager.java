@@ -5,6 +5,8 @@ import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.items.enums.RarityType;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.items.models.CustomItem;
+import com.phazerous.phazerous.items.utils.ItemUtils;
+import com.phazerous.phazerous.utils.NBTEditor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -40,10 +42,17 @@ public class ItemManager {
             setItemDescription(itemMeta, title, item.getRarityType());
             itemStack.setItemMeta(itemMeta);
 
-            itemsHashmap.put(itemId, itemStack);
+            ItemStack finalItemStack = ItemUtils.setItemId(itemStack, itemId.toHexString());
+
+            itemsHashmap.put(itemId, finalItemStack);
         }
 
         return itemsHashmap.get(itemId).clone();
+    }
+
+    public String getItemTitle(ObjectId itemId) {
+        Document itemDoc = getItemDoc(itemId);
+        return itemDoc.getString("title");
     }
 
     private Document getItemDoc(ObjectId itemId) {

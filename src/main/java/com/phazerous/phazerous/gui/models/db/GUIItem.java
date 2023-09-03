@@ -12,5 +12,4 @@ public class GUIItem {
     private ObjectId itemId;
     private List<Integer> slots;
     private ObjectId actionId;
-    private Double price;
 }

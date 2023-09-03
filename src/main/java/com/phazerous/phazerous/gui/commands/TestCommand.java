@@ -5,6 +5,7 @@ import com.phazerous.phazerous.gui.managers.GUIManager;
 import org.bson.types.ObjectId;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class TestCommand extends AbstractCommand {
     private final GUIManager guiManager;

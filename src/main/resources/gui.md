@@ -6,7 +6,8 @@
 > the inventory itself. Each item within this inventory can be associated with an action ID, which dictates what action
 > should be taken when a player interacts with the item. <br /><br />
 > For instance, if you want a specific action to occur when a player selects an item in your custom inventory, such as
-> purchasing an item, you need to define this behavior. To achieve this, you retrieve the action associated with the item
+> purchasing an item, you need to define this behavior. To achieve this, you retrieve the action associated with the
+> item
 > from the inventory's description. If an action exists, you can specify particular options for it. For example, you can
 > set an additional price for an item within your inventory and associate it with an action ID in string
 > format. <br /><br />
@@ -84,6 +85,16 @@ The assortment holds a description of the action that should be executed.
 > > {
 > >   ...;
 > >   "price": Double;
+> > }
+> > ```
+> > 24
+> > #### Purchase Item with Item Action (type = 2)
+> > ```
+> > {
+> >   ...;
+> > "requestedItemId": ObjectId;
+> > 
+> > "amount": Integer;
 > > }
 > > ```
 
