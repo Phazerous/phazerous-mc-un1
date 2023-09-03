@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class MoneyReward {
-    private Double min;
-    private Double max;
+    private Long min;
+    private Long max;
 }

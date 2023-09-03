@@ -9,8 +9,8 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class PlayerBalance {
+public class PlayerAccount {
     private ObjectId _id;
     private UUID playerUUID;
-    private Double balance;
+    private Long balance;
 }

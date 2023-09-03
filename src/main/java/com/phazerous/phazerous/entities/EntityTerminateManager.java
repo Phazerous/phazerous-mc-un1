@@ -78,15 +78,12 @@ public class EntityTerminateManager {
 
         if (moneyReward == null) return;
 
-        Double moneyMin = moneyReward.getMin();
-        Double moneyMax = mobEntity.getMoneyReward().getMax();
+        Long moneyMin = moneyReward.getMin();
+        Long moneyMax = mobEntity.getMoneyReward().getMax();
 
-        if (!(moneyMin != null || moneyMax != null)) return;
+        if (moneyMin == null || moneyMax == null) return;
 
-        Double moneyRaw = moneyMin + Math.round(Math.random() * (moneyMax - moneyMin));
-        DecimalFormat df = new DecimalFormat("#.##");
-        String roundMoneyString = df.format(moneyRaw);
-        Double money = Double.parseDouble(roundMoneyString);
+        Long money = moneyMin + Math.round(Math.random() * (moneyMax - moneyMin));
 
         economyManager.deposit(player.getUniqueId(), money);
     }

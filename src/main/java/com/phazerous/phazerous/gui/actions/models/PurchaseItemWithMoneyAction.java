@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class PurchaseItemWithMoneyAction extends PurchaseItemAction {
-    private Double price;
+    private Long price;
 }

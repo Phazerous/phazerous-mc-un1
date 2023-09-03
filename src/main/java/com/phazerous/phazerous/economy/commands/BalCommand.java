@@ -3,10 +3,12 @@ package com.phazerous.phazerous.economy.commands;
 import com.phazerous.phazerous.commands.AbstractCommand;
 import com.phazerous.phazerous.economy.EconomyManager;
 import com.phazerous.phazerous.exceptions.PlayerNotFoundException;
+import com.phazerous.phazerous.utils.Formatter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 public class BalCommand extends AbstractCommand {
@@ -28,8 +30,9 @@ public class BalCommand extends AbstractCommand {
     }
 
     private boolean handleGetBalance(Player player) {
-        double balance = economyManager.getPlayerBalanceByUUID(player.getUniqueId());
-        player.sendMessage("Your balance is " + balance + ".");
+        Long balance = economyManager.getPlayerBalanceByUUID(player.getUniqueId());
+        DecimalFormat df = new DecimalFormat("#,###");
+        player.sendMessage("Your balance is " + df.format(balance) + ".");
         return true;
     }
 
@@ -38,7 +41,7 @@ public class BalCommand extends AbstractCommand {
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null) throw new PlayerNotFoundException();
 
-            Double amount = Double.parseDouble(args[1]);
+            long amount = Long.parseLong(args[1]);
 
             economyManager.setPlayerBalance(target.getUniqueId(), amount);
         } catch (NumberFormatException e) {

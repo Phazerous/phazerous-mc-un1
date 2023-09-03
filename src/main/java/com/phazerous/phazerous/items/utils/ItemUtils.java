@@ -32,6 +32,18 @@ public class ItemUtils {
         return NBTEditor.setInteger(item, "itemType", itemType.getItemType());
     }
 
+    public static ItemStack setItemDamage(ItemStack item, Long damage) {
+        return NBTEditor.setLong(item, "damage", damage);
+    }
+
+    public static boolean hasItemDamage(ItemStack item) {
+        return NBTEditor.hasKey(item, "damage");
+    }
+
+    public static Long getItemDamage(ItemStack item) {
+        return NBTEditor.getLong(item, "damage");
+    }
+
     public static boolean hasItemSpeed(ItemStack item) {
         return NBTEditor.hasKey(item, "speed");
     }

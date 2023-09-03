@@ -4,6 +4,7 @@ import com.phazerous.phazerous.gui.GUISharedConstants;
 import com.phazerous.phazerous.gui.actions.models.AbstractGUIAction;
 import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithItemAction;
 import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithMoneyAction;
+import com.phazerous.phazerous.utils.Formatter;
 import com.phazerous.phazerous.utils.NBTEditor;
 import lombok.Getter;
 import org.bson.types.ObjectId;
@@ -38,7 +39,7 @@ public class CustomInventory {
 
         if (action instanceof PurchaseItemWithMoneyAction) {
             PurchaseItemWithMoneyAction purchaseItemWithMoneyAction = (PurchaseItemWithMoneyAction) action;
-            Double price = purchaseItemWithMoneyAction.getPrice();
+            Long price = purchaseItemWithMoneyAction.getPrice();
 
             setPrice(item, price);
         } else if (action instanceof PurchaseItemWithItemAction) {
@@ -52,14 +53,14 @@ public class CustomInventory {
         return NBTEditor.setString(item, GUISharedConstants.ACTION_ID_NAME, action.get_id().toHexString());
     }
 
-    private void setPrice(ItemStack item, Double price) {
+    private void setPrice(ItemStack item, Long price) {
         if (price == null) return;
 
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
 
-        String priceTemplate = "§r§6Price: %.2f";
-        String priceString = String.format(priceTemplate, price);
+        String priceTemplate = "§r§6Price: %s";
+        String priceString = String.format(priceTemplate, Formatter.formatFunds(price));
         String mcString = ChatColor.translateAlternateColorCodes('§', priceString);
 
         lore.add(null); // Add an empty line

@@ -66,7 +66,7 @@ public class GUIActionManager {
     }
 
     private void executePurchaseItemWithMoneyAction(PurchaseItemWithMoneyAction action, Player player) {
-        Double price = action.getPrice();
+        Long price = action.getPrice();
 
         if (!(economyManager.withdraw(player.getUniqueId(), price))) return;
 

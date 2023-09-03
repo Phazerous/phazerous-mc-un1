@@ -5,7 +5,7 @@ import com.mongodb.client.model.Updates;
 import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.economy.interfaces.IEconomySubscriber;
-import com.phazerous.phazerous.economy.models.PlayerBalance;
+import com.phazerous.phazerous.economy.models.PlayerAccount;
 import com.phazerous.phazerous.db.DBManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -23,14 +23,14 @@ public class EconomyManager {
     }
 
 
-    public boolean withdraw(UUID playerUUID, double amount) {
-        double balance = getPlayerBalanceByUUID(playerUUID);
+    public boolean withdraw(UUID playerUUID, Long amount) {
+        Long balance = getPlayerBalanceByUUID(playerUUID);
 
         if (balance < amount) {
             return false;
         }
 
-        double newBalance = balance - amount;
+        long newBalance = balance - amount;
 
         setPlayerBalance(playerUUID, newBalance);
         handleBalanceChange(playerUUID, newBalance);
@@ -38,35 +38,33 @@ public class EconomyManager {
         return true;
     }
 
-    public boolean setPlayerBalance(UUID playerUUID, double balance) {
+    public void setPlayerBalance(UUID playerUUID, Long balance) {
         Bson update = Updates.set("balance", balance);
         Bson filter = Filters.eq("playerUUID", playerUUID);
 
         dbManager.updateOne(update, filter, CollectionType.PLAYERS_BALANCES);
 
         handleBalanceChange(playerUUID, balance);
-
-        return true;
     }
 
-    private void handleBalanceChange(UUID playerUUID, double balance) {
+    private void handleBalanceChange(UUID playerUUID, Long balance) {
         for (IEconomySubscriber subscriber : subscribers) {
             subscriber.update(playerUUID, balance);
         }
     }
 
-    public double getPlayerBalanceByUUID(UUID playerUUID) {
+    public Long getPlayerBalanceByUUID(UUID playerUUID) {
         Bson filter = Filters.eq("playerUUID", playerUUID);
 
         Document playerBalanceDoc = dbManager.getDocument(filter, CollectionType.PLAYERS_BALANCES);
-        PlayerBalance playerBalance = DocumentParser.parseDocument(playerBalanceDoc, PlayerBalance.class);
+        PlayerAccount playerAccount = DocumentParser.parseDocument(playerBalanceDoc, PlayerAccount.class);
 
-        return playerBalance.getBalance();
+        return playerAccount.getBalance();
     }
 
-    public void deposit(UUID playerUUID, double amount) {
-        double balance = getPlayerBalanceByUUID(playerUUID);
-        double newBalance = balance + amount;
+    public void deposit(UUID playerUUID, Long amount) {
+        long balance = getPlayerBalanceByUUID(playerUUID);
+        long newBalance = balance + amount;
 
         setPlayerBalance(playerUUID, newBalance);
         handleBalanceChange(playerUUID, newBalance);
@@ -86,7 +84,7 @@ public class EconomyManager {
     }
 
     private void createVault(UUID playerUUID) {
-        Document document = new Document().append("playerUUID", playerUUID).append("balance", 0.0d);
+        Document document = new Document().append("playerUUID", playerUUID).append("balance", 0L);
 
         dbManager.insertDocument(document, CollectionType.PLAYERS_BALANCES);
     }

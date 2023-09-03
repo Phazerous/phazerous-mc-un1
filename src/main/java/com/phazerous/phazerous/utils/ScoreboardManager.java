@@ -16,7 +16,8 @@ import java.util.function.Consumer;
 
 public class ScoreboardManager implements IEconomySubscriber {
     private EconomyManager economyManager;
-    private final HashMap<UUID, Consumer<Double>> balanceSetters = new HashMap<>();
+    private final HashMap<UUID, Consumer<String>> balanceSetters = new HashMap<>();
+    private final HashMap<UUID, Long> balances = new HashMap<>();
 
     public void setEconomyManager(EconomyManager economyManager) {
         this.economyManager = economyManager;
@@ -27,7 +28,8 @@ public class ScoreboardManager implements IEconomySubscriber {
         final int SCOREBOARD_BALANCE_POSITION = 2;
         final String SCOREBOARD_TITLE = ChatColor.GOLD + "PhazerousMC";
 
-        double balance = economyManager.getPlayerBalanceByUUID(player.getUniqueId());
+        long balance = economyManager.getPlayerBalanceByUUID(player.getUniqueId());
+        balances.put(player.getUniqueId(), balance);
 
         org.bukkit.scoreboard.ScoreboardManager scoreboardManager = org.bukkit.Bukkit.getScoreboardManager();
         Scoreboard scoreboard = scoreboardManager.getNewScoreboard();
@@ -39,10 +41,10 @@ public class ScoreboardManager implements IEconomySubscriber {
         Team money = setSidebarLine(scoreboard, objective, SCOREBOARD_BALANCE_POSITION);
         setSidebarLine(scoreboard, objective, 3);
 
-        Consumer<Double> setBalance = getBalanceSetter(money);
+        Consumer<String> setBalance = getBalanceSetter(money);
         balanceSetters.put(player.getUniqueId(), setBalance);
 
-        setBalance.accept(balance);
+        setBalance.accept(Formatter.formatFunds(balance));
 
         player.setScoreboard(scoreboard);
     }
@@ -57,21 +59,16 @@ public class ScoreboardManager implements IEconomySubscriber {
         return team;
     }
 
-    private Consumer<Double> getBalanceSetter(Team team) {
-        final String SCOREBOARD_BALANCE_TITLE = "Balance: ";
+    private Consumer<String> getBalanceSetter(Team team) {
+        final String SCOREBOARD_BALANCE_TITLE = "Funds: ";
         final String SCOREBOARD_BALANCE_COLOR = "§6";
-        final DecimalFormat decimalFormat = new DecimalFormat("#,###.##");
 
-        return newBalance -> {
-            String formattedBalance = decimalFormat.format(newBalance);
-
-            team.setPrefix(SCOREBOARD_BALANCE_TITLE + SCOREBOARD_BALANCE_COLOR + formattedBalance);
-        };
+        return newBalance -> team.setPrefix(SCOREBOARD_BALANCE_TITLE + SCOREBOARD_BALANCE_COLOR + newBalance);
     }
 
     @Override
-    public void update(UUID playerUUID, double balance) {
-        Consumer<Double> setBalance = balanceSetters.get(playerUUID);
-        setBalance.accept(balance);
+    public void update(UUID playerUUID, long balance) {
+        Consumer<String> setBalance = balanceSetters.get(playerUUID);
+        setBalance.accept(Formatter.formatFunds(balance));
     }
 }

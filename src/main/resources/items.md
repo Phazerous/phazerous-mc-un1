@@ -37,6 +37,7 @@ The assortment holds a models of items that can be purchased/crafted/updated/etc
 | 0         | Usual             |
 | 1         | Gathering Digging |
 | 2         | Gathering Mining  |
+| 3         | Weapon Handheld   |
 
 - ItemType is stored in NBT.
 
@@ -45,9 +46,19 @@ The assortment holds a models of items that can be purchased/crafted/updated/etc
 > ### Gathering Item
 > ```
 > {
+>  ...;
 >  "speed": Long;
 > }
 > ``` 
 > - Speed is the Long value that boost mining speed. The actual speed of gatherig is calculated
     as: <br/> `Gathering Time` = `Hardness` / `Speed` / `10`;
 > - ItemSpeed is stored in NBT.
+> ---
+>
+> > ### Weapon Handheld
+> ```
+> {
+>  ...;
+>  "damage": Long;
+> }
+> ```

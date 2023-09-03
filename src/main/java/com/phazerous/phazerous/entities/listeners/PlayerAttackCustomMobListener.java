@@ -8,13 +8,16 @@ import com.phazerous.phazerous.entities.utils.EntityUtils;
 import com.phazerous.phazerous.entities.runtime.models.RuntimeBaseEntity;
 import com.phazerous.phazerous.entities.runtime.models.RuntimeMobEntity;
 import com.phazerous.phazerous.entities.runtime.EntityRuntimeManager;
+import com.phazerous.phazerous.items.utils.ItemUtils;
 import org.bson.Document;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,10 +63,9 @@ public class PlayerAttackCustomMobListener implements Listener {
     private void handleAttack(Entity entity, RuntimeMobEntity mobRuntimeEntity, Player player) {
         Long health = mobRuntimeEntity.getHealth();
         Long maxHealth = mobRuntimeEntity.getMaxHealth();
+        Long damage = getDamage(player);
 
-        health -= 2;
-
-        ((LivingEntity) entity).damage(0);
+        health -= damage;
 
         if (health <= 0) entityTerminateManager.terminateEntity(entity, mobRuntimeEntity, player);
         else {
@@ -72,6 +74,18 @@ public class PlayerAttackCustomMobListener implements Listener {
         }
 
         handleDamage(entity.getUniqueId(), 2D, health);
+    }
+
+    private Long getDamage(Player player) {
+        final long BASE_DAMAGE = 1L;
+
+        ItemStack itemInHand = player.getInventory().getItemInHand();
+
+        if (itemInHand == null || itemInHand.getType() == Material.AIR) return BASE_DAMAGE;
+
+        if (!ItemUtils.hasItemDamage(itemInHand)) return BASE_DAMAGE;
+
+        return ItemUtils.getItemDamage(itemInHand);
     }
 
     public void subscribe(IEntityDamageSubscriber subscriber) {

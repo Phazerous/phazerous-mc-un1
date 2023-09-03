@@ -7,6 +7,7 @@ import com.phazerous.phazerous.items.enums.RarityType;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.items.models.CustomItem;
 import com.phazerous.phazerous.items.models.GatheringItem;
+import com.phazerous.phazerous.items.models.WeaponItem;
 import com.phazerous.phazerous.items.utils.ItemUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -51,6 +52,8 @@ public class ItemManager {
 
             if (itemType == ItemType.GATHERING_DIGGING) {
                 itemStack = ItemUtils.setItemSpeed(itemStack, ((GatheringItem) item).getSpeed());
+            } else if (itemType == ItemType.WEAPON_HANDHELD) {
+                itemStack = ItemUtils.setItemDamage(itemStack, ((WeaponItem) item).getDamage());
             }
 
 
