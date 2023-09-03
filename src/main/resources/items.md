@@ -38,6 +38,7 @@ The assortment holds a models of items that can be purchased/crafted/updated/etc
 | 1         | Gathering Digging |
 | 2         | Gathering Mining  |
 | 3         | Weapon Handheld   |
+| 4         | Armor             |"
 
 - ItemType is stored in NBT.
 
@@ -55,10 +56,23 @@ The assortment holds a models of items that can be purchased/crafted/updated/etc
 > - ItemSpeed is stored in NBT.
 > ---
 >
-> > ### Weapon Handheld
+> ### Weapon Handheld
 > ```
 > {
 >  ...;
 >  "damage": Long;
 > }
 > ```
+>
+> ---
+>
+> ### Armor
+> ```
+> {
+>  ...;
+>  "defense": Long;
+> }
+> ```
+>
+> 64f498c7b4fd53dbfaf446ba
+> 64f498e6b4fd53dbfaf446bd

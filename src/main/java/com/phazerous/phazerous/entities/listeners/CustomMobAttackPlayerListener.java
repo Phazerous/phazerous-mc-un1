@@ -7,12 +7,15 @@ import com.phazerous.phazerous.entities.runtime.EntityRuntimeManager;
 import com.phazerous.phazerous.entities.runtime.models.RuntimeBaseEntity;
 import com.phazerous.phazerous.entities.runtime.models.RuntimeMobEntity;
 import com.phazerous.phazerous.entities.utils.EntityUtils;
+import com.phazerous.phazerous.items.utils.ItemUtils;
 import org.bson.Document;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class CustomMobAttackPlayerListener implements Listener {
 
@@ -50,8 +53,31 @@ public class CustomMobAttackPlayerListener implements Listener {
     }
 
     private void handleAttack(RuntimeMobEntity mobRuntimeEntity, Player player) {
+        Long defense = getPlayerDefense(player);
         Long attack = mobRuntimeEntity.getAttack();
-        Double playerHealth = player.getHealth();
-        player.setHealth(playerHealth - attack);
+
+        attack -= defense;
+
+        if (attack > 0) {
+            Double playerHealth = player.getHealth();
+            player.setHealth(playerHealth - attack);
+        }
+    }
+
+    private Long getPlayerDefense(Player player) {
+        long defense = 0L;
+
+        ItemStack[] armorContents = player.getEquipment().getArmorContents();
+
+        for (ItemStack armorContent : armorContents) {
+            if (armorContent == null || armorContent.getType() == Material.AIR) continue;
+
+            if (!ItemUtils.hasDefense(armorContent)) continue;
+            Long pieceDefense = ItemUtils.getDefense(armorContent);
+
+            defense += pieceDefense;
+        }
+
+        return defense;
     }
 }

@@ -5,6 +5,7 @@ import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.items.enums.ItemType;
 import com.phazerous.phazerous.items.enums.RarityType;
 import com.phazerous.phazerous.db.DBManager;
+import com.phazerous.phazerous.items.models.ArmorItem;
 import com.phazerous.phazerous.items.models.CustomItem;
 import com.phazerous.phazerous.items.models.GatheringItem;
 import com.phazerous.phazerous.items.models.WeaponItem;
@@ -49,11 +50,14 @@ public class ItemManager {
 
             itemStack = ItemUtils.setItemId(itemStack, itemId.toHexString());
             itemStack = ItemUtils.setItemType(itemStack, itemType);
+            itemStack = ItemUtils.setUnbreakable(itemStack, true);
 
             if (itemType == ItemType.GATHERING_DIGGING) {
                 itemStack = ItemUtils.setItemSpeed(itemStack, ((GatheringItem) item).getSpeed());
             } else if (itemType == ItemType.WEAPON_HANDHELD) {
                 itemStack = ItemUtils.setItemDamage(itemStack, ((WeaponItem) item).getDamage());
+            } else if (itemType == ItemType.ARMOR) {
+                itemStack = ItemUtils.setDefense(itemStack, ((ArmorItem) item).getDefense());
             }
 
 

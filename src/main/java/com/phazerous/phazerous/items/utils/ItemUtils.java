@@ -54,6 +54,22 @@ public class ItemUtils {
         return NBTEditor.getLong(item, "speed");
     }
 
+    public static ItemStack setDefense(ItemStack item, Long defense) {
+        return NBTEditor.setLong(item, "defense", defense);
+    }
+
+    public static Long getDefense(ItemStack item) {
+        return NBTEditor.getLong(item, "defense");
+    }
+
+    public static boolean hasDefense(ItemStack item) {
+        return NBTEditor.hasKey(item, "defense");
+    }
+
+    public static ItemStack setUnbreakable(ItemStack item, Boolean unbreakable) {
+        return NBTEditor.setInteger(item, "Unbreakable", unbreakable ? 1 : 0);
+    }
+
     public static ItemStack setItemSpeed(ItemStack item, Long speed) {
         return NBTEditor.setLong(item, "speed", speed);
     }

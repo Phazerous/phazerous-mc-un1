@@ -1,5 +1,6 @@
 package com.phazerous.phazerous.items.enums;
 
+import com.phazerous.phazerous.items.models.ArmorItem;
 import com.phazerous.phazerous.items.models.CustomItem;
 import com.phazerous.phazerous.items.models.GatheringItem;
 import com.phazerous.phazerous.items.models.WeaponItem;
@@ -7,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 public enum ItemType {
-    USUAL(0, CustomItem.class), GATHERING_DIGGING(1, GatheringItem.class), WEAPON_HANDHELD(3, WeaponItem.class);
+    USUAL(0, CustomItem.class), GATHERING_DIGGING(1, GatheringItem.class), WEAPON_HANDHELD(3, WeaponItem.class), ARMOR(4, ArmorItem.class);
 
     private final Integer itemType;
     private final Class<? extends CustomItem> itemClass;
