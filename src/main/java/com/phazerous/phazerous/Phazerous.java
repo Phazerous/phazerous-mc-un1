@@ -10,6 +10,8 @@ import com.phazerous.phazerous.entities.EntityModule;
 import com.phazerous.phazerous.gui.GUIModule;
 import com.phazerous.phazerous.items.ItemManager;
 import com.phazerous.phazerous.items.ItemsModule;
+import com.phazerous.phazerous.message_dispatcher.MessageDispatcher;
+import com.phazerous.phazerous.regions.RegionModule;
 import com.phazerous.phazerous.utils.Scheduler;
 import com.phazerous.phazerous.utils.ScoreboardManager;
 import org.bukkit.Bukkit;
@@ -45,9 +47,14 @@ public class Phazerous extends JavaPlugin implements Listener {
 
         GUIModule guiModule = new GUIModule(dbManager, itemManager, economyManager);
 
+        MessageDispatcher messageDispatcher = new MessageDispatcher();
+
+        RegionModule regionModule = new RegionModule();
+        regionModule.subscribeToRegionChange(messageDispatcher);
+
 
         registerCommands(entityModule, economyModule, itemsModule, guiModule);
-        registerListeners(entityModule, economyModule, itemsModule, guiModule);
+        registerListeners(entityModule, economyModule, itemsModule, guiModule, regionModule);
     }
 
     private void registerCommands(AbstractModule... modules) {
