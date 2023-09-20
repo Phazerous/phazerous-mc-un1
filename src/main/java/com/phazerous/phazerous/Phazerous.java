@@ -12,6 +12,8 @@ import com.phazerous.phazerous.items.ItemManager;
 import com.phazerous.phazerous.items.ItemsModule;
 import com.phazerous.phazerous.message_dispatcher.MessageDispatcher;
 import com.phazerous.phazerous.regions.RegionModule;
+import com.phazerous.phazerous.resources.ResourceManager;
+import com.phazerous.phazerous.resources.ResourceModule;
 import com.phazerous.phazerous.utils.Scheduler;
 import com.phazerous.phazerous.utils.ScoreboardManager;
 import org.bukkit.Bukkit;
@@ -49,8 +51,11 @@ public class Phazerous extends JavaPlugin implements Listener {
 
         MessageDispatcher messageDispatcher = new MessageDispatcher();
 
+        ResourceModule resourceModule = new ResourceModule(this);
+
         RegionModule regionModule = new RegionModule();
         regionModule.subscribeToRegionChange(messageDispatcher);
+        regionModule.subscribeToRegionChange(resourceModule.getResourceManager());
 
 
         registerCommands(entityModule, economyModule, itemsModule, guiModule);

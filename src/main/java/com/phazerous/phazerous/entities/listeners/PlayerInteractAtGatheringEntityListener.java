@@ -33,6 +33,8 @@ public class PlayerInteractAtGatheringEntityListener implements Listener {
 
     @EventHandler
     public void onPlayerInteractAtGatheringEntity(PlayerInteractAtEntityEvent event) {
+        event.getPlayer().sendMessage("Interacted with entity");
+
         Entity entity = event.getRightClicked();
 
         Document runtimeEntityDoc = entityRuntimeManager.getRuntimeEntityDoc(entity.getUniqueId());
