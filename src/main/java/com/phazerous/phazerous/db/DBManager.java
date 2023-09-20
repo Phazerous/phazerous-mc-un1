@@ -16,6 +16,8 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mongodb.client.model.Filters.eq;
+
 public class DBManager {
     private final MongoDatabase database;
     private final MongoClient mongoClient;
@@ -58,6 +60,12 @@ public class DBManager {
         return getCollection(collectionName).find(query).first();
     }
 
+    public Document getDocument(Bson query, CollectionType collectionType, Bson projection) {
+        String collectionName = collectionType.getCollectionName();
+
+        return getCollection(collectionName).find(query).projection(projection).first();
+    }
+
     public void insertDocuments(List<Document> documents, CollectionType collectionType) {
         String collectionName = collectionType.getCollectionName();
 
@@ -83,7 +91,7 @@ public class DBManager {
 
         MongoCollection<Document> collection = getCollection(collectionName);
 
-        collection.deleteOne(Filters.eq("_id", documentId));
+        collection.deleteOne(eq("_id", documentId));
     }
 
     public void deleteDocument(Bson query, CollectionType collectionType) {
@@ -103,7 +111,7 @@ public class DBManager {
     }
 
     public void updateOne(Bson update, ObjectId objectId, CollectionType collectionType) {
-        Bson filter = Filters.eq("_id", objectId);
+        Bson filter = eq("_id", objectId);
 
         updateOne(update, filter, collectionType);
     }

@@ -7,6 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InventoryUtils {
     public static int countItemsInInventory(Player player, ObjectId requestedItemId) {
         int amount = 0;
@@ -50,5 +53,34 @@ public class InventoryUtils {
         }
 
         return false;
+    }
+
+    public static int[] getItemsSlotsByPattern(List<String> pattern) {
+        return getItemsSlotsByPattern(pattern, 0);
+    }
+
+    /**
+     * Returns the position of the items in the inventory that match the string pattern.
+     *
+     * @param pattern
+     * @param startRow The row where the pattern starts. (starts at 0)
+     * @return
+     */
+    public static int[] getItemsSlotsByPattern(List<String> pattern, int startRow) {
+        List<Integer> positionsList = new ArrayList<>();
+
+        for (int i = 0; i < pattern.size(); i++) {
+            String row = pattern.get(i);
+
+            if (row.length() != 9) throw new IllegalArgumentException("The pattern must have 9 characters per row.");
+
+            for (int j = 0; j < row.length(); j++) {
+                char character = row.charAt(j);
+
+                if (character == 'x') positionsList.add((i + startRow) * 9 + j);
+            }
+        }
+
+        return ArrayUtils.getIntArrayFromList(positionsList);
     }
 }

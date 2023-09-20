@@ -7,12 +7,12 @@ import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.economy.EconomyManager;
 import com.phazerous.phazerous.economy.EconomyModule;
 import com.phazerous.phazerous.entities.EntityModule;
+import com.phazerous.phazerous.gathering.GatheringModule;
 import com.phazerous.phazerous.gui.GUIModule;
 import com.phazerous.phazerous.items.ItemManager;
 import com.phazerous.phazerous.items.ItemsModule;
 import com.phazerous.phazerous.message_dispatcher.MessageDispatcher;
 import com.phazerous.phazerous.regions.RegionModule;
-import com.phazerous.phazerous.resources.ResourceManager;
 import com.phazerous.phazerous.resources.ResourceModule;
 import com.phazerous.phazerous.utils.Scheduler;
 import com.phazerous.phazerous.utils.ScoreboardManager;
@@ -47,6 +47,8 @@ public class Phazerous extends JavaPlugin implements Listener {
 
         this.entityModule = new EntityModule(dbManager, itemManager, economyManager);
 
+        GatheringModule gatheringModule = new GatheringModule(dbManager);
+
         GUIModule guiModule = new GUIModule(dbManager, itemManager, economyManager);
 
         MessageDispatcher messageDispatcher = new MessageDispatcher();
@@ -58,8 +60,8 @@ public class Phazerous extends JavaPlugin implements Listener {
         regionModule.subscribeToRegionChange(resourceModule.getResourceManager());
 
 
-        registerCommands(entityModule, economyModule, itemsModule, guiModule);
-        registerListeners(entityModule, economyModule, itemsModule, guiModule, regionModule);
+        registerCommands(entityModule, economyModule, itemsModule, guiModule, gatheringModule);
+        registerListeners(entityModule, economyModule, itemsModule, guiModule, regionModule, gatheringModule);
     }
 
     private void registerCommands(AbstractModule... modules) {

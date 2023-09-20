@@ -3,22 +3,19 @@ package com.phazerous.phazerous.resources.listeners;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.ListeningWhitelist;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.phazerous.phazerous.resources.ResourceManager;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
+import com.phazerous.phazerous.resources._resourceManager;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GatherStartListener {
 
     private final JavaPlugin plugin;
-    private final ResourceManager resourceManager;
+    private final _resourceManager resourceManager;
 
-    public GatherStartListener(JavaPlugin plugin, ResourceManager resourceManager) {
+    public GatherStartListener(JavaPlugin plugin, _resourceManager resourceManager) {
         this.plugin = plugin;
         this.resourceManager = resourceManager;
     }

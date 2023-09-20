@@ -10,3 +10,5 @@ commands:
     usage: /<command>
   spawnentity:
     usage: /<command>
+  tools:
+    usage: /<command>

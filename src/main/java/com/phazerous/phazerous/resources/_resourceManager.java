@@ -1,12 +1,5 @@
 package com.phazerous.phazerous.resources;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.BlockPosition;
 import com.phazerous.phazerous.regions.Region;
 import com.phazerous.phazerous.regions.listeners.IRegionChangeObserver;
 import net.minecraft.server.v1_8_R3.*;
@@ -20,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class ResourceManager implements IRegionChangeObserver {
+public class _resourceManager implements IRegionChangeObserver {
     private final HashMap<UUID, List<Integer>> playersResourcesIds = new HashMap<>();
 
     private List<Integer> getPlayerResourcesIds(Player player) {

@@ -7,10 +7,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
 public class ResourceModule extends AbstractModule {
-    private final ResourceManager resourceManager;
+    private final _resourceManager resourceManager;
 
     public ResourceModule(JavaPlugin plugin) {
-        this.resourceManager = new ResourceManager();
+        this.resourceManager = new _resourceManager();
 
         GatherStartListener gatherStartListener = new GatherStartListener(plugin, resourceManager);
         gatherStartListener.enable();
