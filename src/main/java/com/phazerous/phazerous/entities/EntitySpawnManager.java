@@ -53,7 +53,7 @@ public class EntitySpawnManager {
 
         Entity entity = null;
 
-        BaseEntity parsedEntity = DocumentParser.parseDocument(entityDoc, entityTypeClass);
+        BaseEntity parsedEntity = DocumentParser.parse(entityDoc, entityTypeClass);
 
         if (entityType == EntityType.GATHERING_ENTITY) {
             entity = spawnGatheringEntity(entityLocation, (GatheringEntity) parsedEntity);
@@ -106,7 +106,8 @@ public class EntitySpawnManager {
 
         NBTEditor.setNoGravity(mob, true);
 
-        ((LivingEntity) mob).getEquipment().setHelmet(new ItemStack(Material.STONE_BUTTON)); // SUNSCREEN
+        ((LivingEntity) mob).getEquipment()
+                .setHelmet(new ItemStack(Material.STONE_BUTTON)); // SUNSCREEN
 
         return mob;
     }
@@ -120,8 +121,9 @@ public class EntitySpawnManager {
     }
 
     public void despawnEntities() {
-        List<UUID> runtimeEntitiesUUIDs = entityRuntimeManager.getRuntimeEntities().stream()
-                .map(RuntimeBaseEntity::getUuid).collect(Collectors.toList());
+        List<UUID> runtimeEntitiesUUIDs = entityRuntimeManager.getRuntimeEntities()
+                .stream().map(RuntimeBaseEntity::getUuid)
+                .collect(Collectors.toList());
 
         for (Entity entity : Bukkit.getWorld("world").getEntities()) {
             if (runtimeEntitiesUUIDs.contains(entity.getUniqueId())) {

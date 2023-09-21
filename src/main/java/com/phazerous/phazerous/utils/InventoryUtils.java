@@ -59,6 +59,18 @@ public class InventoryUtils {
         return getItemsSlotsByPattern(pattern, 0);
     }
 
+    public static int[] getItemsSlotsByPattern(String pattern) {
+        return getItemsSlotsByPattern(new ArrayList<String>() {{
+            add(pattern);
+        }}, 0);
+    }
+
+    public static int[] getItemsSlotsByPattern(String pattern, int startRow) {
+        return getItemsSlotsByPattern(new ArrayList<String>() {{
+            add(pattern);
+        }}, startRow);
+    }
+
     /**
      * Returns the position of the items in the inventory that match the string pattern.
      *
@@ -72,7 +84,8 @@ public class InventoryUtils {
         for (int i = 0; i < pattern.size(); i++) {
             String row = pattern.get(i);
 
-            if (row.length() != 9) throw new IllegalArgumentException("The pattern must have 9 characters per row.");
+            if (row.length() != 9)
+                throw new IllegalArgumentException("The pattern must have 9 characters per row.");
 
             for (int j = 0; j < row.length(); j++) {
                 char character = row.charAt(j);

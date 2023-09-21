@@ -53,7 +53,7 @@ public class GUIActionManager {
 
         GUIActionType actionType = getActionType(actionDoc);
 
-        AbstractGUIAction abstractGUIAction = DocumentParser.parseDocument(actionDoc, actionType.getActionSchema());
+        AbstractGUIAction abstractGUIAction = DocumentParser.parse(actionDoc, actionType.getActionSchema());
 
         if (actionType == GUIActionType.PURCHASE_ITEM_WITH_ITEM) {
             PurchaseItemWithItemAction purchaseItemWithItemAction = (PurchaseItemWithItemAction) abstractGUIAction;
@@ -80,9 +80,11 @@ public class GUIActionManager {
         ObjectId requestedItemId = action.getRequestedItemId();
         Integer amount = action.getAmount();
 
-        if (InventoryUtils.countItemsInInventory(player, requestedItemId) < amount) return;
+        if (InventoryUtils.countItemsInInventory(player, requestedItemId) < amount)
+            return;
 
-        if (!InventoryUtils.withdrawItemsFromInventory(player, requestedItemId, amount)) return;
+        if (!InventoryUtils.withdrawItemsFromInventory(player, requestedItemId, amount))
+            return;
 
         ObjectId itemIdToPurchase = action.getItemIdToPurchase();
         ItemStack purchasedItem = itemManager.getItemById(itemIdToPurchase);

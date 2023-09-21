@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class DocumentParser {
-    public static <T> T parseDocument(Document document, Class<T> clazz) {
+    public static <T> T parse(Document document, Class<T> clazz) {
         try {
             T instance = clazz.newInstance();
 
@@ -31,11 +31,12 @@ public class DocumentParser {
 
                             if (rawType == List.class) {
                                 List<?> documentList = (List<?>) document.get(fieldName);
-                                List<Object> newList = (List<Object>) documentList.getClass().newInstance();
+                                List<Object> newList = (List<Object>) documentList.getClass()
+                                        .newInstance();
 
                                 for (Object object : documentList) {
                                     if (object instanceof Document) {
-                                        Object parsedObject = parseDocument((Document) object, contentType);
+                                        Object parsedObject = parse((Document) object, contentType);
                                         newList.add(parsedObject);
                                     } else {
                                         newList.add(object);
@@ -48,7 +49,8 @@ public class DocumentParser {
                     } else {
                         Object fieldValue = document.get(fieldName);
 
-                        if (fieldValue instanceof Document) fieldValue = parseDocument((Document) fieldValue, type);
+                        if (fieldValue instanceof Document)
+                            fieldValue = parse((Document) fieldValue, type);
 
                         field.set(instance, fieldValue);
                     }

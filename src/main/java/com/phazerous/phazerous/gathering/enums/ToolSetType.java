@@ -3,12 +3,12 @@ package com.phazerous.phazerous.gathering.enums;
 import lombok.Getter;
 
 @Getter
-public enum GatheringType {
+public enum ToolSetType {
     MINING("mining"), DIGGING("digging"), CHOPPING("chopping");
 
     private final String dbPropertyName;
 
-    GatheringType(String dbPropertyName) {
+    ToolSetType(String dbPropertyName) {
         this.dbPropertyName = dbPropertyName;
     }
 }

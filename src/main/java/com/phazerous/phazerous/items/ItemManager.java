@@ -36,7 +36,7 @@ public class ItemManager {
             Document itemDoc = getItemDoc(itemId);
             ItemType itemType = getItemType(itemDoc);
 
-            CustomItem item = DocumentParser.parseDocument(itemDoc, itemType.getItemClass());
+            CustomItem item = DocumentParser.parse(itemDoc, itemType.getItemClass());
 
             String title = item.getTitle();
             Material material = Material.getMaterial(item.getMaterialType());

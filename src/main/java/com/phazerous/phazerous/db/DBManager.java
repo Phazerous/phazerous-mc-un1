@@ -27,12 +27,14 @@ public class DBManager {
         String MONGO_DB_NAME = "mc-db";
 
         ConnectionString connectionString = new ConnectionString(MONGO_DB_CONNECTION_STRING);
-        CodecRegistry pojoCodecRegistry = CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true)
-                .build());
+        CodecRegistry pojoCodecRegistry = CodecRegistries.fromProviders(PojoCodecProvider.builder()
+                .automatic(true).build());
         CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
 
-        MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(connectionString)
-                .codecRegistry(codecRegistry).uuidRepresentation(UuidRepresentation.STANDARD).build();
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(connectionString)
+                .codecRegistry(codecRegistry)
+                .uuidRepresentation(UuidRepresentation.STANDARD).build();
 
         mongoClient = MongoClients.create(settings);
         database = mongoClient.getDatabase(MONGO_DB_NAME);
@@ -43,6 +45,14 @@ public class DBManager {
         String collectionName = collectionType.getCollectionName();
 
         FindIterable<Document> documentsIterator = getCollection(collectionName).find();
+
+        return documentsIterator.into(new ArrayList<>());
+    }
+
+    public List<Document> getDocuments(Bson query, CollectionType collectionType) {
+        String collectionName = collectionType.getCollectionName();
+
+        FindIterable<Document> documentsIterator = getCollection(collectionName).find(query);
 
         return documentsIterator.into(new ArrayList<>());
     }
@@ -63,7 +73,8 @@ public class DBManager {
     public Document getDocument(Bson query, CollectionType collectionType, Bson projection) {
         String collectionName = collectionType.getCollectionName();
 
-        return getCollection(collectionName).find(query).projection(projection).first();
+        return getCollection(collectionName).find(query).projection(projection)
+                .first();
     }
 
     public void insertDocuments(List<Document> documents, CollectionType collectionType) {

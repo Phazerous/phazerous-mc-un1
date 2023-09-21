@@ -33,7 +33,7 @@ public class EntityRuntimeManager implements IEntitySpawnSubscriber {
 
     public List<RuntimeBaseEntity> getRuntimeEntities() {
         return dbManager.getDocuments(CollectionType.RUNTIME_ENTITIES).stream()
-                .map(document -> DocumentParser.parseDocument(document, RuntimeBaseEntity.class))
+                .map(document -> DocumentParser.parse(document, RuntimeBaseEntity.class))
                 .collect(Collectors.toList());
     }
 

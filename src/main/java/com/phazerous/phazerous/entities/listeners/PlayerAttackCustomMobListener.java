@@ -12,7 +12,6 @@ import com.phazerous.phazerous.items.utils.ItemUtils;
 import org.bson.Document;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -50,10 +49,11 @@ public class PlayerAttackCustomMobListener implements Listener {
         event.setDamage(0);
 
         EntityType entityType = EntityUtils.getEntityType(runtimeEntityDoc);
-        if (!(entityType == EntityType.MOB_ENTITY || entityType == EntityType.BOSS_ENTITY)) return;
+        if (!(entityType == EntityType.MOB_ENTITY || entityType == EntityType.BOSS_ENTITY))
+            return;
 
         Class<? extends RuntimeBaseEntity> runtimeEntityClass = entityType.getRuntimeEntityClass();
-        RuntimeBaseEntity runtimeBaseEntity = DocumentParser.parseDocument(runtimeEntityDoc, runtimeEntityClass);
+        RuntimeBaseEntity runtimeBaseEntity = DocumentParser.parse(runtimeEntityDoc, runtimeEntityClass);
 
         Player player = (Player) damager;
 
@@ -67,7 +67,8 @@ public class PlayerAttackCustomMobListener implements Listener {
 
         health -= damage;
 
-        if (health <= 0) entityTerminateManager.terminateEntity(entity, mobRuntimeEntity, player);
+        if (health <= 0)
+            entityTerminateManager.terminateEntity(entity, mobRuntimeEntity, player);
         else {
             entityRuntimeManager.handleHealthChange(mobRuntimeEntity.get_id(), health);
             EntityUtils.setMobEntityHPTitle(entity, mobRuntimeEntity.getTitle(), health, maxHealth);
@@ -81,7 +82,8 @@ public class PlayerAttackCustomMobListener implements Listener {
 
         ItemStack itemInHand = player.getInventory().getItemInHand();
 
-        if (itemInHand == null || itemInHand.getType() == Material.AIR) return BASE_DAMAGE;
+        if (itemInHand == null || itemInHand.getType() == Material.AIR)
+            return BASE_DAMAGE;
 
         if (!ItemUtils.hasItemDamage(itemInHand)) return BASE_DAMAGE;
 

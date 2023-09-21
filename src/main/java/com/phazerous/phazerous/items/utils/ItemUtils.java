@@ -4,6 +4,7 @@ import com.phazerous.phazerous.items.enums.ItemType;
 import com.phazerous.phazerous.utils.NBTEditor;
 import org.bson.types.ObjectId;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class ItemUtils {
 
@@ -72,5 +73,13 @@ public class ItemUtils {
 
     public static ItemStack setItemSpeed(ItemStack item, Long speed) {
         return NBTEditor.setLong(item, "speed", speed);
+    }
+
+    public static ItemStack hideAttributes(ItemStack item) {
+        ItemMeta itemMeta = item.getItemMeta();
+        itemMeta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ATTRIBUTES);
+        item.setItemMeta(itemMeta);
+
+        return item;
     }
 }

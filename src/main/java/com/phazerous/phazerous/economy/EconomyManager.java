@@ -57,7 +57,7 @@ public class EconomyManager {
         Bson filter = Filters.eq("playerUUID", playerUUID);
 
         Document playerBalanceDoc = dbManager.getDocument(filter, CollectionType.PLAYERS_BALANCES);
-        PlayerAccount playerAccount = DocumentParser.parseDocument(playerBalanceDoc, PlayerAccount.class);
+        PlayerAccount playerAccount = DocumentParser.parse(playerBalanceDoc, PlayerAccount.class);
 
         return playerAccount.getBalance();
     }
@@ -84,7 +84,8 @@ public class EconomyManager {
     }
 
     private void createVault(UUID playerUUID) {
-        Document document = new Document().append("playerUUID", playerUUID).append("balance", 0L);
+        Document document = new Document().append("playerUUID", playerUUID)
+                .append("balance", 0L);
 
         dbManager.insertDocument(document, CollectionType.PLAYERS_BALANCES);
     }

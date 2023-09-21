@@ -23,7 +23,7 @@ public class InventoryClickListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getClickedInventory();
-
+        
         if (GUIManager.isCustomInventory(inventory)) event.setCancelled(true);
 
         ItemStack item = event.getCurrentItem();

@@ -2,7 +2,7 @@ package com.phazerous.phazerous.gathering.commands;
 
 import com.phazerous.phazerous.commands.AbstractCommand;
 import com.phazerous.phazerous.gathering.GatheringManager;
-import com.phazerous.phazerous.gathering.enums.GatheringType;
+import com.phazerous.phazerous.gathering.enums.ToolSetType;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
@@ -16,7 +16,7 @@ public class ToolsCommand extends AbstractCommand {
 
     @Override
     public boolean onCommand(Player player, Command command, String s, String[] args) {
-        gatheringManager.handleGathering(player, GatheringType.MINING);
+        gatheringManager.handleStart(player, ToolSetType.MINING);
 
         return true;
     }

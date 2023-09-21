@@ -19,7 +19,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class EntityTerminateManager {
@@ -52,12 +51,13 @@ public class EntityTerminateManager {
 
         Document entityDoc = entityManager.getEntityDoc(locationedEntity.getEntityId());
         EntityType entityType = EntityUtils.getEntityType(entityDoc);
-        BaseEntity entityModel = DocumentParser.parseDocument(entityDoc, entityType.getEntityClass());
+        BaseEntity entityModel = DocumentParser.parse(entityDoc, entityType.getEntityClass());
         List<EntityDrop> dropsIds = entityModel.getDrops();
 
         handleDropItems(dropsIds, player);
 
-        if (entityModel instanceof MobEntity) handleMoneyReward(player, (MobEntity) entityModel);
+        if (entityModel instanceof MobEntity)
+            handleMoneyReward(player, (MobEntity) entityModel);
 
         scheduleEntityRespawn(locationedEntity, entityModel.getRespawnTime());
     }

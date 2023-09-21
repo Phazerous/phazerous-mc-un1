@@ -44,7 +44,7 @@ public class PlayerInteractAtGatheringEntityListener implements Listener {
         if (entityType != EntityType.GATHERING_ENTITY) return;
 
         Class<? extends RuntimeBaseEntity> runtimeEntityClass = entityType.getRuntimeEntityClass();
-        RuntimeBaseEntity runtimeBaseEntity = DocumentParser.parseDocument(runtimeEntityDoc, runtimeEntityClass);
+        RuntimeBaseEntity runtimeBaseEntity = DocumentParser.parse(runtimeEntityDoc, runtimeEntityClass);
 
         Player player = event.getPlayer();
 

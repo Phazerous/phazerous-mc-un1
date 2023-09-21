@@ -4,7 +4,6 @@ import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.gui.actions.GUIActionManager;
 import com.phazerous.phazerous.gui.actions.models.AbstractGUIAction;
-import com.phazerous.phazerous.gui.actions.models.PurchaseItemWithItemAction;
 import com.phazerous.phazerous.gui.models.CustomInventory;
 import com.phazerous.phazerous.gui.models.CustomInventoryItem;
 import com.phazerous.phazerous.gui.models.db.GUIInventory;
@@ -36,7 +35,7 @@ public class GUIManager {
 
     private void createInventory(ObjectId inventoryId) {
         Document inventoryDoc = dbManager.getDocument(inventoryId, CollectionType.GUI_INVENTORIES);
-        GUIInventory inventoryModel = DocumentParser.parseDocument(inventoryDoc, GUIInventory.class);
+        GUIInventory inventoryModel = DocumentParser.parse(inventoryDoc, GUIInventory.class);
 
         List<GUIItem> contentsModel = inventoryModel.getContents();
         int size = inventoryModel.getSize();
@@ -62,7 +61,8 @@ public class GUIManager {
     }
 
     private Inventory getOrCreateInventory(ObjectId inventoryId) {
-        if (!(inventories.containsKey(inventoryId))) createInventory(inventoryId);
+        if (!(inventories.containsKey(inventoryId)))
+            createInventory(inventoryId);
 
         return inventories.get(inventoryId);
     }

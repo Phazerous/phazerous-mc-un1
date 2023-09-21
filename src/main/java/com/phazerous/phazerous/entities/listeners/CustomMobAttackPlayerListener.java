@@ -41,12 +41,13 @@ public class CustomMobAttackPlayerListener implements Listener {
         event.setDamage(0);
 
         EntityType entityType = EntityUtils.getEntityType(runtimeEntityDoc);
-        if (!(entityType == EntityType.MOB_ENTITY || entityType == EntityType.BOSS_ENTITY)) return;
+        if (!(entityType == EntityType.MOB_ENTITY || entityType == EntityType.BOSS_ENTITY))
+            return;
 
         Player player = (Player) damagedEntity;
 
         Class<? extends RuntimeBaseEntity> runtimeEntityClass = entityType.getRuntimeEntityClass();
-        RuntimeBaseEntity runtimeBaseEntity = DocumentParser.parseDocument(runtimeEntityDoc, runtimeEntityClass);
+        RuntimeBaseEntity runtimeBaseEntity = DocumentParser.parse(runtimeEntityDoc, runtimeEntityClass);
 
         handleAttack((RuntimeMobEntity) runtimeBaseEntity, player);
 
@@ -70,7 +71,8 @@ public class CustomMobAttackPlayerListener implements Listener {
         ItemStack[] armorContents = player.getEquipment().getArmorContents();
 
         for (ItemStack armorContent : armorContents) {
-            if (armorContent == null || armorContent.getType() == Material.AIR) continue;
+            if (armorContent == null || armorContent.getType() == Material.AIR)
+                continue;
 
             if (!ItemUtils.hasDefense(armorContent)) continue;
             Long pieceDefense = ItemUtils.getDefense(armorContent);

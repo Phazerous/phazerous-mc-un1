@@ -7,7 +7,6 @@ import com.phazerous.phazerous.entities.bosses.models.AbstractBoss;
 import com.phazerous.phazerous.entities.models.entities.BaseEntity;
 import com.phazerous.phazerous.entities.models.entities.LocationedEntity;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.HashMap;
@@ -27,8 +26,9 @@ public class EntityManager {
     }
 
     public List<LocationedEntity> getLocationedEntities() {
-        return dbManager.getDocuments(CollectionType.LOCATIONED_ENTITIES).stream()
-                .map(document -> DocumentParser.parseDocument(document, LocationedEntity.class))
+        return dbManager.getDocuments(CollectionType.LOCATIONED_ENTITIES)
+                .stream()
+                .map(document -> DocumentParser.parse(document, LocationedEntity.class))
                 .collect(Collectors.toList());
     }
 
@@ -39,6 +39,6 @@ public class EntityManager {
     public LocationedEntity getLocationedEntityById(ObjectId id) {
         Document locationedEntityDoc = dbManager.getDocument(id, CollectionType.LOCATIONED_ENTITIES);
 
-        return DocumentParser.parseDocument(locationedEntityDoc, LocationedEntity.class);
+        return DocumentParser.parse(locationedEntityDoc, LocationedEntity.class);
     }
 }
