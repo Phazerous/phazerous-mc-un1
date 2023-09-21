@@ -6,11 +6,12 @@ actions occurs. For example, the [Veins](../gathering/main.md) are spawned.
 ```
 {
    "_id": ObjectId;
+   "name": String;
    "x1": Int32;
    "z1": Int32;
    "x2": Int32;
    "z2": Int32;
-   veinsLocations: [VeinLocation]
+   "veinsLocations": [VeinLocation];
 }
 ```
 

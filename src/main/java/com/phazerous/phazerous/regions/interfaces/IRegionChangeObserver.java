@@ -1,6 +1,6 @@
-package com.phazerous.phazerous.regions.listeners;
+package com.phazerous.phazerous.regions.interfaces;
 
-import com.phazerous.phazerous.regions.Region;
+import com.phazerous.phazerous.regions.models.Region;
 import org.bukkit.entity.Player;
 
 public interface IRegionChangeObserver {

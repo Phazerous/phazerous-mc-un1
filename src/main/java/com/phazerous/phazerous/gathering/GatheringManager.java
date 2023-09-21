@@ -3,12 +3,12 @@ package com.phazerous.phazerous.gathering;
 import com.mongodb.client.model.Filters;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.db.enums.CollectionType;
-import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.gathering.enums.ToolSetType;
-import com.phazerous.phazerous.gathering.models.MiningPickaxe;
-import com.phazerous.phazerous.gathering.models.PositionedTool;
-import com.phazerous.phazerous.gathering.models.ToolsMining;
+import com.phazerous.phazerous.gathering.interfaces.IGatheringStartObserver;
+import com.phazerous.phazerous.gathering.models.*;
 import com.phazerous.phazerous.items.utils.ItemUtils;
+import com.phazerous.phazerous.regions.interfaces.IRegionChangeObserver;
+import com.phazerous.phazerous.regions.models.Region;
 import com.phazerous.phazerous.utils.InventoryUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -24,16 +24,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class GatheringManager {
+public class GatheringManager implements IRegionChangeObserver, IGatheringStartObserver {
     private final DBManager dbManager;
+    private final GatheringSpawnManager gatheringSpawnManager;
+    private final VeinManager veinManager;
     private final ToolsManager toolsManager;
+
+    private final HashMap<UUID, List<VeinEntity>> playerVeinsEntities = new HashMap<>();
 
     private final Inventory backgroundInventory;
     private final HashMap<UUID, PositionedTool> playersCurrentTools = new HashMap<>();
 
-    public GatheringManager(DBManager dbManager, ToolsManager toolsManager) {
+    public GatheringManager(DBManager dbManager, ToolsManager toolsManager, VeinManager veinManager, GatheringSpawnManager gatheringSpawnManager) {
         this.dbManager = dbManager;
         this.toolsManager = toolsManager;
+        this.veinManager = veinManager;
+        this.gatheringSpawnManager = gatheringSpawnManager;
 
         this.backgroundInventory = createBackgroundInventory();
     }
@@ -42,21 +48,21 @@ public class GatheringManager {
         player.sendMessage("You clicked");
     }
 
-    public void handleStart(Player player, ToolSetType toolSetType) {
-        tools
-
-        Inventory inventory = Bukkit.createInventory(null, backgroundInventory.getSize(), "Mining");
-
-        inventory.setContents(backgroundInventory.getContents());
-        int[] slotsToPlace = InventoryUtils.getItemsSlotsByPattern("  x      ", 4);
-
-        for (int slot : slotsToPlace) {
-            inventory.setItem(slot, buildTool(pickaxe));
-            playersCurrentTools.put(player.getUniqueId(), new PositionedTool(slot, pickaxe));
-        }
-
-        player.openInventory(inventory);
-    }
+//    public void handleStart(Player player, ToolSetType toolSetType) {
+//        tools
+//
+//        Inventory inventory = Bukkit.createInventory(null, backgroundInventory.getSize(), "Mining");
+//
+//        inventory.setContents(backgroundInventory.getContents());
+//        int[] slotsToPlace = InventoryUtils.getItemsSlotsByPattern("  x      ", 4);
+//
+//        for (int slot : slotsToPlace) {
+//            inventory.setItem(slot, buildTool(pickaxe));
+//            playersCurrentTools.put(player.getUniqueId(), new PositionedTool(slot, pickaxe));
+//        }
+//
+//        player.openInventory(inventory);
+//    }
 
     private ItemStack buildTool(MiningPickaxe pickaxe) {
         ItemStack itemStack = new ItemStack(pickaxe.getMaterial());
@@ -119,5 +125,50 @@ public class GatheringManager {
         };
 
         return InventoryUtils.getItemsSlotsByPattern(pattern);
+    }
+
+
+    private void spawnVeins(Player player, Region region) {
+        for (VeinLocation veinLocation : region.getVeinsLocations()) {
+            int entityId = gatheringSpawnManager.spawnVeinEntity(player, veinLocation);
+            getPlayerVeinsEntities(player).add(new VeinEntity(veinLocation.getVeinId(), entityId));
+        }
+    }
+
+    private void despawnVeins(Player player) {
+        List<VeinEntity> playerVeinsEntities = getPlayerVeinsEntities(player);
+
+        for (VeinEntity veinEntity : playerVeinsEntities) {
+            gatheringSpawnManager.despawnVeinEntity(player, veinEntity.getEntityId());
+        }
+
+        playerVeinsEntities.clear();
+    }
+
+    private List<VeinEntity> getPlayerVeinsEntities(Player player) {
+        if (!playerVeinsEntities.containsKey(player.getUniqueId())) {
+            playerVeinsEntities.put(player.getUniqueId(), new ArrayList<>());
+        }
+
+        return playerVeinsEntities.get(player.getUniqueId());
+    }
+
+    @Override
+    public void onRegionChange(Player player, Region region) {
+        despawnVeins(player);
+
+        if (region != null) {
+            spawnVeins(player, region);
+
+        }
+    }
+
+    @Override
+    public void onGatheringStart(Player player, int entityId) {
+        VeinEntity veinEntity = getPlayerVeinsEntities(player).stream()
+                .filter(it -> it.getEntityId() == entityId)
+                .findFirst().get();
+
+        player.sendMessage("VeinID: " + veinEntity.getEntityId());
     }
 }

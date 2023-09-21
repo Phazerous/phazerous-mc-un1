@@ -1,7 +1,8 @@
 package com.phazerous.phazerous.regions.listeners;
 
-import com.phazerous.phazerous.regions.Region;
 import com.phazerous.phazerous.regions.RegionManager;
+import com.phazerous.phazerous.regions.interfaces.IRegionChangeObserver;
+import com.phazerous.phazerous.regions.models.Region;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,11 +24,10 @@ public class RegionChangeListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent e) {
         Player player = e.getPlayer();
 
-        Region previousRegion = regionManager.getPreviousRegion(player.getUniqueId());
+        Region previousRegion = regionManager.getPlayerRegion(player.getUniqueId());
         Region currentRegion = regionManager.getRegionByLocation(player.getLocation());
 
-
-        if (previousRegion == currentRegion || currentRegion == null) return;
+        if (previousRegion == currentRegion) return;
 
         handleRegionChange(player, previousRegion, currentRegion);
     }

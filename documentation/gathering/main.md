@@ -14,6 +14,9 @@ The module is responsible for gathering resources from the world.
    3. [VeinDrop](#veindrop)
    4. [Resource](#resource)
    5. [VeinTool](#veintool)
+   6. [PlayerVeinTool](#playerveintool)
+   7. [VeinTypeToolsEnum](#veintypetoolsenum)
+   8. [VeinLocation](#veinlocation)
 
 ### VeinLocation
 
@@ -24,7 +27,6 @@ Stored in [Region](../regions/main.md) collection as a nested object.
 
 ```
 {
-   "_id": ObjectId;
    x: Double;
    y: Double;
    z: Double;
@@ -46,7 +48,7 @@ Collection: `veins`
 ```
 {
    "_id": ObjectId;
-   "title": String;
+   "name": String;
    "veinType": Int32;    (VeinType)
    "resourceDurability": Int32;
    "drops": [{               (VeinDrop)

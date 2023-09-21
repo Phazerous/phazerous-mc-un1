@@ -1,7 +1,7 @@
 package com.phazerous.phazerous.message_dispatcher;
 
-import com.phazerous.phazerous.regions.Region;
-import com.phazerous.phazerous.regions.listeners.IRegionChangeObserver;
+import com.phazerous.phazerous.regions.interfaces.IRegionChangeObserver;
+import com.phazerous.phazerous.regions.models.Region;
 import org.bukkit.entity.Player;
 
 public class MessageDispatcher implements IRegionChangeObserver {
@@ -12,6 +12,9 @@ public class MessageDispatcher implements IRegionChangeObserver {
 
     @Override
     public void onRegionChange(Player player, Region region) {
-        dispatchMessage(player, "You are now in " + region.getName());
+        if (region != null) {
+            dispatchMessage(player, "You are now in " + region.getName());
+
+        }
     }
 }

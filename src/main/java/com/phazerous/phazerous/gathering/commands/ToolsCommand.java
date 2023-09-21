@@ -16,7 +16,7 @@ public class ToolsCommand extends AbstractCommand {
 
     @Override
     public boolean onCommand(Player player, Command command, String s, String[] args) {
-        gatheringManager.handleStart(player, ToolSetType.MINING);
+//        gatheringManager.handleStart(player, ToolSetType.MINING);
 
         return true;
     }
