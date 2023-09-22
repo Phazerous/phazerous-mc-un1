@@ -4,12 +4,14 @@ import com.mongodb.client.model.Filters;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.gathering.enums.ToolSetType;
+import com.phazerous.phazerous.gathering.enums.VeinTools;
 import com.phazerous.phazerous.gathering.interfaces.IGatheringStartObserver;
 import com.phazerous.phazerous.gathering.models.*;
 import com.phazerous.phazerous.items.utils.ItemUtils;
 import com.phazerous.phazerous.regions.interfaces.IRegionChangeObserver;
 import com.phazerous.phazerous.regions.models.Region;
 import com.phazerous.phazerous.utils.InventoryUtils;
+import javafx.util.Pair;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bukkit.Bukkit;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class GatheringManager implements IRegionChangeObserver, IGatheringStartObserver {
     private final DBManager dbManager;
@@ -159,7 +162,6 @@ public class GatheringManager implements IRegionChangeObserver, IGatheringStartO
 
         if (region != null) {
             spawnVeins(player, region);
-
         }
     }
 
@@ -169,6 +171,25 @@ public class GatheringManager implements IRegionChangeObserver, IGatheringStartO
                 .filter(it -> it.getEntityId() == entityId)
                 .findFirst().get();
 
-        player.sendMessage("VeinID: " + veinEntity.getEntityId());
+        Vein vein = veinManager.getVein(veinEntity);
+
+        List<Integer> toolsIds;
+
+        switch (vein.getVeinType()) {
+            case 0:
+                toolsIds = VeinTools.MINING.getToolIds();
+                break;
+            default:
+                System.out.println("Unknown vein type");
+                return;
+        }
+
+
+        List<Pair<VeinTool, ItemStack>> tools = toolsManager.getPlayerTools(player, toolsIds);
+        ItemStack[] items = tools.stream().map(Pair::getValue)
+                .toArray(ItemStack[]::new);
+
+        player.getInventory().addItem(items);
+
     }
 }

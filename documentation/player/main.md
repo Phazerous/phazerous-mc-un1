@@ -10,7 +10,7 @@ Collection: `players`
    "uuid": UUID;
    "tools": [           (VeinTool[])
       {
-         "veinToolId": ObjectId;
+         "toolId": ObjectId;
          "toolType": Int32;
       }
    ];

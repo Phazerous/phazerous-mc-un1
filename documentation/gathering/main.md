@@ -108,6 +108,7 @@ Collection: `tools`
    title: String;
    materialType: Int32;
    toolType: Int32;
+   strength: Int32;
 }
 ```
 
@@ -128,7 +129,7 @@ Collection: `tools`
 
 --- 
 
-### VeinTypeToolsEnum
+### VeinTypeToolsEnum (REWRITE, SHOULD BE STORED IN CODE)
 
 `VeinTypeToolsEnum` — the enum that holds the information about the toolsTypes for a `veinType`.
 

@@ -16,6 +16,7 @@ public class GatheringModule extends AbstractModule {
         ToolsManager toolsManager = new ToolsManager(dbManager);
         GatheringSpawnManager gatheringSpawnManager = new GatheringSpawnManager();
         GatherStartListener gatherStartListener = new GatherStartListener(plugin, gatheringSpawnManager);
+        gatherStartListener.enable();
         gatheringManager = new GatheringManager(dbManager, toolsManager, new VeinManager(dbManager), gatheringSpawnManager);
 
 
