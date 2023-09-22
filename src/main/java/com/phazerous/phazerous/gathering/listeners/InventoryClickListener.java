@@ -1,7 +1,6 @@
 package com.phazerous.phazerous.gathering.listeners;
 
-import com.phazerous.phazerous.gathering.GatheringManager;
-import org.bukkit.entity.Player;
+import com.phazerous.phazerous.gathering.manager.GatheringManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -26,13 +25,12 @@ public class InventoryClickListener implements Listener {
 
         if (!isGatheringInventory(inventory)) return;
 
-        gatheringManager.handleClick((Player) event.getWhoClicked(), event.getCurrentItem());
+//        gatheringManager.handleClick((Player) event.getWhoClicked(), event.getCurrentItem());
 
         event.setCancelled(true);
     }
 
     private boolean isGatheringInventory(Inventory inventory) {
-        return availableInventoryTitles.contains(inventory.getTitle()
-                .toLowerCase());
+        return availableInventoryTitles.contains(inventory.getTitle().toLowerCase());
     }
 }

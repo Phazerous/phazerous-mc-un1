@@ -7,13 +7,14 @@ import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.economy.EconomyManager;
 import com.phazerous.phazerous.economy.EconomyModule;
 import com.phazerous.phazerous.entities.EntityModule;
-import com.phazerous.phazerous.gathering.GatheringManager;
 import com.phazerous.phazerous.gathering.GatheringModule;
 import com.phazerous.phazerous.gui.GUIModule;
 import com.phazerous.phazerous.items.ItemManager;
 import com.phazerous.phazerous.items.ItemsModule;
 import com.phazerous.phazerous.message_dispatcher.MessageDispatcher;
+import com.phazerous.phazerous.player.PlayerModule;
 import com.phazerous.phazerous.regions.RegionModule;
+import com.phazerous.phazerous.shared.SharedModule;
 import com.phazerous.phazerous.utils.Scheduler;
 import com.phazerous.phazerous.utils.ScoreboardManager;
 import org.bukkit.Bukkit;
@@ -35,6 +36,10 @@ public class Phazerous extends JavaPlugin implements Listener {
 
     private void initialize() {
         DBManager dbManager = new DBManager();
+
+        SharedModule sharedModule = new SharedModule(this, dbManager);
+
+        // MOVE TO SHARED MODULE
         Scheduler scheduler = Scheduler.init(Bukkit.getScheduler(), this);
 
         ItemsModule itemsModule = new ItemsModule(dbManager);
@@ -47,17 +52,17 @@ public class Phazerous extends JavaPlugin implements Listener {
 
         this.entityModule = new EntityModule(dbManager, itemManager, economyManager);
 
-        GatheringModule gatheringModule = new GatheringModule(this, dbManager);
+        PlayerModule playerModule = new PlayerModule(sharedModule);
+
+        GatheringModule gatheringModule = new GatheringModule(sharedModule, playerModule.getPlayerRepository());
 
 
         GUIModule guiModule = new GUIModule(dbManager, itemManager, economyManager);
 
         MessageDispatcher messageDispatcher = new MessageDispatcher();
 
-        GatheringManager gatheringManager = gatheringModule.getGatheringManager();
-
-        RegionModule regionModule = new RegionModule(dbManager);
-        regionModule.subscribeToRegionChange(gatheringManager);
+        RegionModule regionModule = new RegionModule(sharedModule);
+        regionModule.subscribeToRegionChange(gatheringModule.getVeinManager());
         regionModule.subscribeToRegionChange(messageDispatcher);
 
         registerCommands(entityModule, economyModule, itemsModule, guiModule, gatheringModule);

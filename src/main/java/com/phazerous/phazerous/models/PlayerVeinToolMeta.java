@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.bson.types.ObjectId;
 
 @Getter
-public class PlayerVeinTool {
+public class PlayerVeinToolMeta {
     private ObjectId toolId;
     private Integer toolType;
 }

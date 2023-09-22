@@ -14,16 +14,23 @@ public class ItemBuilder {
     private final ItemMeta meta;
     private final List<String> lore;
 
-    public ItemBuilder(int materialId) {
-        this(Material.getMaterial(materialId));
-    }
-
-    public ItemBuilder(Material material) {
-        instance = new ItemStack(material);
+    private ItemBuilder(ItemStack instance) {
+        this.instance = instance;
         meta = instance.getItemMeta();
         lore = new ArrayList<>();
     }
 
+    public ItemBuilder(int materialId) {
+        this(new ItemStack(materialId));
+    }
+
+    public ItemBuilder(Material material) {
+        this(new ItemStack(material));
+    }
+
+    public ItemBuilder(Material material, int additionalType) {
+        this(new ItemStack(material, 1, (short) additionalType));
+    }
 
     public ItemBuilder setDisplayName(String name) {
         meta.setDisplayName(name);

@@ -1,25 +1,23 @@
-package com.phazerous.phazerous.gathering;
+package com.phazerous.phazerous.gathering.repository;
 
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.gathering.models.Vein;
 import com.phazerous.phazerous.gathering.models.VeinEntity;
-import com.phazerous.phazerous.gathering.models.VeinLocation;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.HashMap;
-import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class VeinManager {
+public class VeinRepository {
     private final DBManager dbManager;
     private final HashMap<ObjectId, Vein> veinsById = new HashMap<>();
 
-    public VeinManager(DBManager dbManager) {
+    public VeinRepository(DBManager dbManager) {
         this.dbManager = dbManager;
     }
 
@@ -35,4 +33,5 @@ public class VeinManager {
 
         return veinsById.get(veinEntity.getVeinId());
     }
+
 }

@@ -20,7 +20,7 @@ The module is responsible for gathering resources from the world.
 
 ### VeinLocation
 
-`VeinLocation` — the location where the vein is spawned. Veins have many locationes, like ores
+`VeinLocation` — the veinLocation where the vein is spawned. Veins have many locationes, like ores
 in the common game.
 
 Stored in [Region](../regions/main.md) collection as a nested object.
@@ -40,7 +40,7 @@ Stored in [Region](../regions/main.md) collection as a nested object.
 
 `Vein` — the overall entity that holds information about the drops, durability, veinType.
 
-Veins are entities and location where gathering mode starts. Each vein has unlimited amount of
+Veins are entities and veinLocation where gathering mode starts. Each vein has unlimited amount of
 resources, so gathering mode ends when the amount of player's turns are out.
 
 Collection: `veins`

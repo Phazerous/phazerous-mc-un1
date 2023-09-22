@@ -10,5 +10,5 @@ import java.util.UUID;
 public class PlayerModel {
     private ObjectId _id;
     private UUID uuid;
-    private List<PlayerVeinTool> tools;
+    private List<PlayerVeinToolMeta> tools;
 }
