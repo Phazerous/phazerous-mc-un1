@@ -12,12 +12,12 @@ import java.util.List;
 public class ItemBuilder {
     private final ItemStack instance;
     private final ItemMeta meta;
-    private final List<String> lore;
+    private List<String> lore;
 
-    private ItemBuilder(ItemStack instance) {
+    public ItemBuilder(ItemStack instance) {
         this.instance = instance;
         meta = instance.getItemMeta();
-        lore = new ArrayList<>();
+        lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
     }
 
     public ItemBuilder(int materialId) {
@@ -39,6 +39,11 @@ public class ItemBuilder {
 
     public ItemBuilder addLore(String line) {
         lore.add(ChatColor.RESET + line);
+        return this;
+    }
+
+    public ItemBuilder setLore(List<String> lore) {
+        this.lore = lore;
         return this;
     }
 

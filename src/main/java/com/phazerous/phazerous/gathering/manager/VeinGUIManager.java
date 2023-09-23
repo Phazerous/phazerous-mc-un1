@@ -1,10 +1,9 @@
 package com.phazerous.phazerous.gathering.manager;
 
 import com.phazerous.phazerous.gathering.models.VeinTool;
-import com.phazerous.phazerous.utils.InventoryUtils;
-import com.phazerous.phazerous.utils.ItemBuilder;
+import com.phazerous.phazerous.gathering.repository.VeinGUIRepository;
+import com.phazerous.phazerous.utils.Scheduler;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -14,21 +13,37 @@ import java.util.*;
 public class VeinGUIManager {
     private final VeinToolsManager veinToolsManager;
     private final GatheringManager gatheringManager;
+    private final Scheduler scheduler;
+    private final VeinGUIRepository veinGUIRepository;
+
+
     private final String INVENTORY_NAME = "Gathering";
     private final int INVENTORY_CLOSE_SLOT = 8;
+    private final int INVENTORY_RESOURCE_ITEM_SLOT = 22;
+    private final int COOL_DOWN_SECONDS = 1;
 
     private final HashMap<UUID, Boolean> playerInventoryCloseAllowance = new HashMap<>();
 
-    private final Inventory patternInventory = createBackgroundInventory();
+    private final Inventory patternInventory;
     private final HashMap<UUID, HashMap<Integer, VeinTool>> playerVeinToolsInSlots = new HashMap<>();
-    private final HashMap<UUID, ItemStack> playerResource = new HashMap<>();
+    private final Set<UUID> playersOnCoolDown = new HashSet<>();
+    private final HashMap<UUID, Inventory> playersVeinInventory = new HashMap<>();
 
-    public VeinGUIManager(VeinToolsManager veinToolsManager, GatheringManager gatheringManager) {
+    public VeinGUIManager(VeinGUIRepository veinGUIRepository, VeinToolsManager veinToolsManager, GatheringManager gatheringManager, Scheduler scheduler) {
+        this.veinGUIRepository = veinGUIRepository;
         this.veinToolsManager = veinToolsManager;
         this.gatheringManager = gatheringManager;
+        this.scheduler = scheduler;
+
+        patternInventory = createBackgroundInventory();
     }
 
-    public Inventory buildInventory(Player player) {
+    /**
+     * @param player                The player to build the inventory for
+     * @param veinResourceLayerItem The first layer that should be set
+     * @return The inventory that was built
+     */
+    public Inventory buildInventory(Player player, ItemStack veinResourceLayerItem) {
         Inventory inventory = Bukkit.createInventory(null, patternInventory.getSize(), INVENTORY_NAME);
 
         inventory.setContents(patternInventory.getContents());
@@ -39,21 +54,28 @@ public class VeinGUIManager {
             inventory.setItem(veinToolInSlot.getKey(), veinToolsManager.buildTool(veinToolInSlot.getValue()));
         }
 
-        inventory.setItem(22, playerResource.get(player.getUniqueId()));
+        inventory.setItem(INVENTORY_RESOURCE_ITEM_SLOT, veinResourceLayerItem);
 
         playerInventoryCloseAllowance.put(player.getUniqueId(), false);
+
+        playersVeinInventory.put(player.getUniqueId(), inventory);
 
         return inventory;
     }
 
-    public void assignResourceItem(Player player, ItemStack itemStack) {
-        playerResource.put(player.getUniqueId(), itemStack);
+    public void setResourceLayerItemStack(Player player, ItemStack veinResourceLayerItem) {
+        Inventory inventory = playersVeinInventory.get(player.getUniqueId());
+
+        inventory.setItem(INVENTORY_RESOURCE_ITEM_SLOT, veinResourceLayerItem);
     }
 
-    public ItemStack getResourceItem(Player player) {
-        return playerResource.get(player.getUniqueId());
-    }
-
+    /**
+     * Assigns the vein tools to the slots in the inventory.
+     * In order to check the position of inventory click, not by extracting the item from the inventory
+     *
+     * @param player    The player to assign the vein tools to
+     * @param veinTools The vein tools to assign
+     */
     public void assignVeinToolsToSlot(Player player, List<VeinTool> veinTools) {
         if (!playerVeinToolsInSlots.containsKey(player.getUniqueId())) {
             playerVeinToolsInSlots.put(player.getUniqueId(), new HashMap<>());
@@ -70,7 +92,9 @@ public class VeinGUIManager {
     }
 
     public boolean isVeinInventory(Inventory inventory) {
-        return inventory.getTitle().equalsIgnoreCase(INVENTORY_NAME);
+        return inventory
+                .getTitle()
+                .equalsIgnoreCase(INVENTORY_NAME);
     }
 
     private List<Integer> getSlotsToPlaceVeinTools() {
@@ -82,46 +106,16 @@ public class VeinGUIManager {
 
         Inventory inventory = Bukkit.createInventory(null, INVENTORY_LINES * 9, "Gathering Pattern");
 
-        ItemStack backgroundItemInventory = getBackgroundInventoryItem();
-        int[] backgroundInventorySlots = getBackgroundInventorySlots();
+        ItemStack backgroundItemInventory = veinGUIRepository.getBackgroundInventoryItem();
+        int[] backgroundInventorySlots = veinGUIRepository.getBackgroundInventorySlots();
 
         for (int slot : backgroundInventorySlots) {
             inventory.setItem(slot, backgroundItemInventory);
         }
 
-        inventory.setItem(INVENTORY_CLOSE_SLOT, getCloseInventoryItem());
+        inventory.setItem(INVENTORY_CLOSE_SLOT, veinGUIRepository.getCloseInventoryItem());
 
         return inventory;
-    }
-
-    private ItemStack getBackgroundInventoryItem() {
-        final Material BACKROUND_MATERIAL = Material.STAINED_GLASS_PANE;
-        final int BACKGROUND_MATERIAL_ADDITIONAL_TYPE = 7;
-
-        return new ItemBuilder(BACKROUND_MATERIAL, BACKGROUND_MATERIAL_ADDITIONAL_TYPE).setDisplayName(" ")
-                .build();
-    }
-
-    private ItemStack getCloseInventoryItem() {
-        final Material CLOSE_MATERIAL = Material.STAINED_GLASS_PANE;
-        final int CLOSE_MATERIAL_ADDITIONAL_TYPE = 14;
-
-        return new ItemBuilder(CLOSE_MATERIAL, CLOSE_MATERIAL_ADDITIONAL_TYPE).setDisplayName("Close")
-                .build();
-    }
-
-    private int[] getBackgroundInventorySlots() {
-        List<String> pattern = new ArrayList<String>() {
-            {
-                add("xx-----xx");
-                add("xxxxxxxxx");
-                add("xxxx-xxxx");
-                add("xxxxxxxxx");
-                add("xx-----xx");
-            }
-        };
-
-        return InventoryUtils.getItemsSlotsByPattern(pattern);
     }
 
     public boolean isAllowedToCloseInventory(Player player) {
@@ -131,7 +125,30 @@ public class VeinGUIManager {
     public void handleInventoryClose(Player player) {
         playerInventoryCloseAllowance.put(player.getUniqueId(), false);
         playerVeinToolsInSlots.remove(player.getUniqueId());
-        playerResource.remove(player.getUniqueId());
+    }
+
+    private void setCoolDown(Player player) {
+        Inventory inventory = playersVeinInventory.get(player.getUniqueId());
+
+        int[] coolDownSlots = veinGUIRepository.getCoolDownSlots();
+        ItemStack coolDownItem = veinGUIRepository.getCoolDownItem();
+
+        ItemStack prevItem = inventory.getItem(coolDownSlots[0]);
+
+        for (int slot : coolDownSlots) {
+            inventory.setItem(slot, coolDownItem);
+        }
+
+
+        playersOnCoolDown.add(player.getUniqueId());
+
+        scheduler.runTaskLater(() -> {
+            for (int slot : coolDownSlots) {
+                inventory.setItem(slot, prevItem);
+            }
+
+            playersOnCoolDown.remove(player.getUniqueId());
+        }, COOL_DOWN_SECONDS * 20);
     }
 
     public void handleClick(Player player, int slot) {
@@ -141,10 +158,18 @@ public class VeinGUIManager {
             return;
         }
 
-        VeinTool veinTool = playerVeinToolsInSlots.get(player.getUniqueId()).get(slot);
+        boolean onCoolDown = playersOnCoolDown.contains(player.getUniqueId());
+
+        if (onCoolDown) return;
+
+        VeinTool veinTool = playerVeinToolsInSlots
+                .get(player.getUniqueId())
+                .get(slot);
 
         if (veinTool == null) return;
 
         gatheringManager.handleGather(player, veinTool);
+        setCoolDown(player);
+
     }
 }

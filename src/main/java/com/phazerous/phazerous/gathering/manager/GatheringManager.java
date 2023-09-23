@@ -2,7 +2,8 @@ package com.phazerous.phazerous.gathering.manager;
 
 import com.phazerous.phazerous.gathering.interfaces.IGatheringStartObserver;
 import com.phazerous.phazerous.gathering.models.Vein;
-import com.phazerous.phazerous.gathering.models.VeinResource;
+import com.phazerous.phazerous.gathering.models.VeinResourceLayer;
+import com.phazerous.phazerous.gathering.models.VeinSession;
 import com.phazerous.phazerous.gathering.models.VeinTool;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -15,7 +16,8 @@ public class GatheringManager implements IGatheringStartObserver {
     private final VeinManager veinManager;
     private final VeinToolsManager veinToolsManager;
     private final VeinResourceManager veinResourceManager;
-    private final HashMap<UUID, Vein> playerCurrentVein = new HashMap<>();
+
+    private final HashMap<UUID, VeinSession> playerVeinSession = new HashMap<>();
     private VeinGUIManager veinGUIManager;
 
     public GatheringManager(VeinToolsManager veinToolsManager, VeinManager veinManager, VeinResourceManager veinResourceManager) {
@@ -29,18 +31,22 @@ public class GatheringManager implements IGatheringStartObserver {
     }
 
     private void handleResourceBreak(Player player) {
-        Vein vein = playerCurrentVein.get(player.getUniqueId());
+        VeinSession veinSession = playerVeinSession.get(player.getUniqueId());
 
         player.sendMessage("You broke the vein!");
     }
 
-    // TODO ON HANDLE CLICK
     public void handleGather(Player player, VeinTool veinTool) {
-        boolean isBroken = veinResourceManager.damageVeinResource(player, veinTool.getStrength());
+        VeinSession veinSession = playerVeinSession.get(player.getUniqueId());
+
+        boolean isBroken = veinResourceManager.damageVeinResource(veinSession.getVeinResource(), veinTool.getStrength());
 
         if (isBroken) {
             handleResourceBreak(player);
         }
+
+        //TODO ADD LAYER CHANGING
+        veinGUIManager.setResourceLayerItemStack(player, veinSession.buildVeinResourceItemStack());
     }
 
     //TODO ON GATHERING FINIHS/ABORT
@@ -49,12 +55,14 @@ public class GatheringManager implements IGatheringStartObserver {
         Vein vein = veinManager.getVein(player, entityId);
         List<VeinTool> tools = veinToolsManager.getPlayerVeinTools(player, vein);
 
-        playerCurrentVein.put(player.getUniqueId(), vein);
-        VeinResource veinResource = veinResourceManager.prepareVeinResource(player, vein);
-
-        veinGUIManager.assignResourceItem(player, veinResource.getLayerItem());
         veinGUIManager.assignVeinToolsToSlot(player, tools);
-        Inventory inventory = veinGUIManager.buildInventory(player);
+
+        VeinSession veinSession = new VeinSession(vein);
+        veinSession.setCurrentLayer(new VeinResourceLayer()); //  !!!!
+
+        playerVeinSession.put(player.getUniqueId(), veinSession);
+
+        Inventory inventory = veinGUIManager.buildInventory(player, veinSession.buildVeinResourceItemStack());
         player.openInventory(inventory);
     }
 }
