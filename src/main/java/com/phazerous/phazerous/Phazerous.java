@@ -15,9 +15,7 @@ import com.phazerous.phazerous.message_dispatcher.MessageDispatcher;
 import com.phazerous.phazerous.player.PlayerModule;
 import com.phazerous.phazerous.regions.RegionModule;
 import com.phazerous.phazerous.shared.SharedModule;
-import com.phazerous.phazerous.utils.Scheduler;
 import com.phazerous.phazerous.utils.ScoreboardManager;
-import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,9 +36,6 @@ public class Phazerous extends JavaPlugin implements Listener {
         DBManager dbManager = new DBManager();
 
         SharedModule sharedModule = new SharedModule(this, dbManager);
-
-        // MOVE TO SHARED MODULE
-        Scheduler scheduler = Scheduler.init(Bukkit.getScheduler(), this);
 
         ItemsModule itemsModule = new ItemsModule(dbManager);
         ItemManager itemManager = itemsModule.getItemManager();

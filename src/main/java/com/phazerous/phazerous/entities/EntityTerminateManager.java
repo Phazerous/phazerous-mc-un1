@@ -1,7 +1,7 @@
 package com.phazerous.phazerous.entities;
 
-import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.DBManager;
+import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.economy.EconomyManager;
 import com.phazerous.phazerous.entities.enums.EntityType;
@@ -13,7 +13,6 @@ import com.phazerous.phazerous.entities.models.misc.MoneyReward;
 import com.phazerous.phazerous.entities.runtime.models.RuntimeBaseEntity;
 import com.phazerous.phazerous.entities.utils.EntityUtils;
 import com.phazerous.phazerous.items.ItemManager;
-import com.phazerous.phazerous.utils.Scheduler;
 import org.bson.Document;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -56,8 +55,7 @@ public class EntityTerminateManager {
 
         handleDropItems(dropsIds, player);
 
-        if (entityModel instanceof MobEntity)
-            handleMoneyReward(player, (MobEntity) entityModel);
+        if (entityModel instanceof MobEntity) handleMoneyReward(player, (MobEntity) entityModel);
 
         scheduleEntityRespawn(locationedEntity, entityModel.getRespawnTime());
     }
@@ -89,9 +87,9 @@ public class EntityTerminateManager {
     }
 
     private void scheduleEntityRespawn(LocationedEntity locationedEntity, Long respawnTime) {
-        Scheduler scheduler = Scheduler.getInstance();
-        scheduler.runTaskLater(() -> {
-            entitySpawnManager.spawnEntity(locationedEntity);
-        }, respawnTime);
+//        Scheduler scheduler = Scheduler.getInstance();
+//        scheduler.runTaskLater(() -> {
+//            entitySpawnManager.spawnEntity(locationedEntity);
+//        }, respawnTime);
     }
 }

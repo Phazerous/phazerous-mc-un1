@@ -5,7 +5,6 @@ import com.phazerous.phazerous.entities.models.entities.BossEntity;
 import com.phazerous.phazerous.entities.models.entities.LocationedEntity;
 import com.phazerous.phazerous.entities.utils.EntityUtils;
 import com.phazerous.phazerous.utils.NBTEditor;
-import com.phazerous.phazerous.utils.Scheduler;
 import org.bson.types.ObjectId;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -16,8 +15,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class BossZombieKing extends AbstractBossWithMinions {
-    private int intervalId = -1;
-    private boolean isSpecialAbilityActivated = false;
+    private final int intervalId = -1;
+    private final boolean isSpecialAbilityActivated = false;
 
     public BossZombieKing(EntitySpawnManager entitySpawnManager, LocationedEntity locationedEntity, BossEntity bossModel, List<ObjectId> minionsIds) {
         super(entitySpawnManager, locationedEntity, bossModel, minionsIds);
@@ -32,29 +31,30 @@ public class BossZombieKing extends AbstractBossWithMinions {
     }
 
     public void activateSkill() {
-        isSpecialAbilityActivated = true;
-
-        Scheduler scheduler = Scheduler.getInstance();
-
-        scheduler.runTaskLater(this::moveBossToCenter, 20L);
-        scheduler.runTaskLater(this::moveBossUp, 40L);
-        scheduler.runTaskLater(this::bossFreeze, 60L);
-        scheduler.runTaskLater(() -> {
-            List<Entity> minions = spawnMinions();
-            intervalId = scheduler.runInterval(() -> {
-                if (isAllMinionsDead(minions)) {
-                    bossUnfreeze();
-                    scheduler.cancelTask(intervalId);
-                }
-            }, 100L);
-        }, 80L);
+//        isSpecialAbilityActivated = true;
+//
+//        Scheduler scheduler = Scheduler.getInstance();
+//
+//        scheduler.runTaskLater(this::moveBossToCenter, 20L);
+//        scheduler.runTaskLater(this::moveBossUp, 40L);
+//        scheduler.runTaskLater(this::bossFreeze, 60L);
+//        scheduler.runTaskLater(() -> {
+//            List<Entity> minions = spawnMinions();
+//            intervalId = scheduler.runInterval(() -> {
+//                if (isAllMinionsDead(minions)) {
+//                    bossUnfreeze();
+//                    scheduler.cancelTask(intervalId);
+//                }
+//            }, 100L);
+//        }, 80L);
     }
 
     private void moveBossToCenter() {
         Location currentLocation = boss.getLocation();
         Location targetLocation = EntityUtils.getEntityLocation(locationedEntity);
 
-        Vector direction = targetLocation.toVector().subtract(currentLocation.toVector()).normalize();
+        Vector direction = targetLocation.toVector().subtract(currentLocation.toVector())
+                .normalize();
 
         boss.setVelocity(direction.multiply(1));
     }

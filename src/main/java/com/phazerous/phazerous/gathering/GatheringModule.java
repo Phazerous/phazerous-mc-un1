@@ -3,11 +3,8 @@ package com.phazerous.phazerous.gathering;
 import com.phazerous.phazerous.archtecture.AbstractModule;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.gathering.listeners.GatherStartListener;
-import com.phazerous.phazerous.gathering.listeners.InventoryClickListener;
-import com.phazerous.phazerous.gathering.manager.GatheringManager;
-import com.phazerous.phazerous.gathering.manager.VeinGUIManager;
-import com.phazerous.phazerous.gathering.manager.VeinManager;
-import com.phazerous.phazerous.gathering.manager.VeinToolsManager;
+import com.phazerous.phazerous.gathering.listeners.VeinGUIListener;
+import com.phazerous.phazerous.gathering.manager.*;
 import com.phazerous.phazerous.gathering.repository.VeinRepository;
 import com.phazerous.phazerous.gathering.repository.VeinToolsRepository;
 import com.phazerous.phazerous.player.PlayerRepository;
@@ -26,13 +23,16 @@ public class GatheringModule extends AbstractModule {
 
         VeinManager veinManager = new VeinManager(sharedModule.getSpawnPacketManager(), veinRepository);
         VeinToolsManager veinToolsManager = new VeinToolsManager(playerRepository, veinToolsRepository);
-        VeinGUIManager veinGUIManager = new VeinGUIManager(veinToolsManager);
-        GatheringManager gatheringManager = new GatheringManager(veinToolsManager, veinManager, veinGUIManager);
+        VeinResourceManager veinResourceManager = new VeinResourceManager();
+        GatheringManager gatheringManager = new GatheringManager(veinToolsManager, veinManager, veinResourceManager);
+        VeinGUIManager veinGUIManager = new VeinGUIManager(veinToolsManager, gatheringManager);
+
+        gatheringManager.setVeinGUIManager(veinGUIManager);
 
         GatherStartListener gatherStartListener = new GatherStartListener(sharedModule.getPlugin(), veinManager);
         gatherStartListener.addObserver(gatheringManager);
 
-        addListener(new InventoryClickListener(gatheringManager));
+        addListener(new VeinGUIListener(veinGUIManager, sharedModule.getScheduler()));
 
         this.veinManager = veinManager;
     }
