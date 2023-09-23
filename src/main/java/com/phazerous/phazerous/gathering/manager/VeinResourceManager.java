@@ -3,6 +3,7 @@ package com.phazerous.phazerous.gathering.manager;
 import com.phazerous.phazerous.gathering.models.VeinResource;
 
 public class VeinResourceManager {
+
     /**
      * Damages the vein resource, setting the ItemStack amount for the player representing the durability
      * If the resource is broken, then `true` returns and the resource updates. Otherwise, `false` returns

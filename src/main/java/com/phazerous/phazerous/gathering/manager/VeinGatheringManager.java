@@ -5,6 +5,8 @@ import com.phazerous.phazerous.gathering.models.Vein;
 import com.phazerous.phazerous.gathering.models.VeinResourceLayer;
 import com.phazerous.phazerous.gathering.models.VeinSession;
 import com.phazerous.phazerous.gathering.models.VeinTool;
+import com.phazerous.phazerous.gathering.repository.VeinLayersRepository;
+import com.phazerous.phazerous.utils.RandomUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -12,15 +14,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class GatheringManager implements IGatheringStartObserver {
+public class VeinGatheringManager implements IGatheringStartObserver {
     private final VeinManager veinManager;
     private final VeinToolsManager veinToolsManager;
     private final VeinResourceManager veinResourceManager;
+    private final VeinLayersRepository veinLayersRepository;
 
     private final HashMap<UUID, VeinSession> playerVeinSession = new HashMap<>();
     private VeinGUIManager veinGUIManager;
 
-    public GatheringManager(VeinToolsManager veinToolsManager, VeinManager veinManager, VeinResourceManager veinResourceManager) {
+    public VeinGatheringManager(VeinLayersRepository veinLayersRepository, VeinToolsManager veinToolsManager, VeinManager veinManager, VeinResourceManager veinResourceManager) {
+        this.veinLayersRepository = veinLayersRepository;
         this.veinToolsManager = veinToolsManager;
         this.veinManager = veinManager;
         this.veinResourceManager = veinResourceManager;
@@ -45,8 +49,14 @@ public class GatheringManager implements IGatheringStartObserver {
             handleResourceBreak(player);
         }
 
-        //TODO ADD LAYER CHANGING
+        veinSession.setCurrentLayer(getRandomResourceLayer(veinSession.getVein()));
         veinGUIManager.setResourceLayerItemStack(player, veinSession.buildVeinResourceItemStack());
+    }
+
+    private VeinResourceLayer getRandomResourceLayer(Vein vein) {
+        List<VeinResourceLayer> layers = veinLayersRepository.getVeinLayers(vein.getVeinType());
+
+        return RandomUtils.getRandomElement(layers);
     }
 
     //TODO ON GATHERING FINIHS/ABORT
@@ -58,7 +68,7 @@ public class GatheringManager implements IGatheringStartObserver {
         veinGUIManager.assignVeinToolsToSlot(player, tools);
 
         VeinSession veinSession = new VeinSession(vein);
-        veinSession.setCurrentLayer(new VeinResourceLayer()); //  !!!!
+        veinSession.setCurrentLayer(getRandomResourceLayer(vein));
 
         playerVeinSession.put(player.getUniqueId(), veinSession);
 

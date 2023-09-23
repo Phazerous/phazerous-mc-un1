@@ -12,7 +12,7 @@ import java.util.*;
 
 public class VeinGUIManager {
     private final VeinToolsManager veinToolsManager;
-    private final GatheringManager gatheringManager;
+    private final VeinGatheringManager veinGatheringManager;
     private final Scheduler scheduler;
     private final VeinGUIRepository veinGUIRepository;
 
@@ -29,10 +29,10 @@ public class VeinGUIManager {
     private final Set<UUID> playersOnCoolDown = new HashSet<>();
     private final HashMap<UUID, Inventory> playersVeinInventory = new HashMap<>();
 
-    public VeinGUIManager(VeinGUIRepository veinGUIRepository, VeinToolsManager veinToolsManager, GatheringManager gatheringManager, Scheduler scheduler) {
+    public VeinGUIManager(VeinGUIRepository veinGUIRepository, VeinToolsManager veinToolsManager, VeinGatheringManager veinGatheringManager, Scheduler scheduler) {
         this.veinGUIRepository = veinGUIRepository;
         this.veinToolsManager = veinToolsManager;
-        this.gatheringManager = gatheringManager;
+        this.veinGatheringManager = veinGatheringManager;
         this.scheduler = scheduler;
 
         patternInventory = createBackgroundInventory();
@@ -168,7 +168,7 @@ public class VeinGUIManager {
 
         if (veinTool == null) return;
 
-        gatheringManager.handleGather(player, veinTool);
+        veinGatheringManager.handleGather(player, veinTool);
         setCoolDown(player);
 
     }

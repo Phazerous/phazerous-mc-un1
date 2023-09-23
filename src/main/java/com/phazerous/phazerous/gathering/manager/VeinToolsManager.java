@@ -1,6 +1,6 @@
 package com.phazerous.phazerous.gathering.manager;
 
-import com.phazerous.phazerous.gathering.enums.VeinTools;
+import com.phazerous.phazerous.gathering.enums.VeinToolType;
 import com.phazerous.phazerous.gathering.models.Vein;
 import com.phazerous.phazerous.gathering.models.VeinTool;
 import com.phazerous.phazerous.models.PlayerModel;
@@ -23,29 +23,28 @@ public class VeinToolsManager {
     }
 
     public List<VeinTool> getPlayerVeinTools(Player player, Vein vein) {
-        List<Integer> veinToolsTypesIds = getVeinToolsTypesIds(vein);
+        List<Integer> veinToolsTypesIds = vein
+                .getVeinType()
+                .getTools()
+                .stream()
+                .map(VeinToolType::getTypeId)
+                .collect(Collectors.toList());
 
         PlayerModel playerModel = playerRepository.getPlayer(player);
 
-        List<PlayerVeinToolMeta> playerVeinToolMetas = playerModel.getTools().stream()
+        List<PlayerVeinToolMeta> playerVeinToolMetas = playerModel
+                .getTools()
+                .stream()
                 .filter(playerVeinToolMeta -> veinToolsTypesIds.contains(playerVeinToolMeta.getToolType()))
                 .collect(Collectors.toList());
 
         return veinToolsRepository.getVeinTools(playerVeinToolMetas);
     }
 
-    private List<Integer> getVeinToolsTypesIds(Vein vein) {
-        switch (vein.getVeinType()) {
-            case 0:
-                return VeinTools.MINING.getToolIds();
-            default:
-                System.out.println("Unknown vein type");
-                return null;
-        }
-    }
-
     public ItemStack buildTool(VeinTool veinTool) {
-        return new ItemBuilder(veinTool.getMaterial()).setDisplayName(veinTool.getTitle()).build();
+        return new ItemBuilder(veinTool.getMaterial())
+                .setDisplayName(veinTool.getTitle())
+                .build();
     }
 
 }

@@ -31,8 +31,12 @@ public class VeinGUIListener implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
+        if (!veinGUIManager.isVeinInventory(event.getInventory())) return;
+
         if (!veinGUIManager.isAllowedToCloseInventory((Player) event.getPlayer())) {
-            scheduler.runTaskLater(() -> event.getPlayer().openInventory(event.getInventory()), 1);
+            scheduler.runTaskLater(() -> event
+                    .getPlayer()
+                    .openInventory(event.getInventory()), 1);
             return;
         }
 

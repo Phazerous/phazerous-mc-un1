@@ -19,18 +19,20 @@ public class VeinSession {
         veinResource = new VeinResource(vein.getResourceDurability());
     }
 
-    public void addGatheredResource() {
+    public void incrementGatheredResources() {
         totalResourceGathered++;
     }
 
     public ItemStack buildVeinResourceItemStack() {
         LoreBuilder loreBuilder = new LoreBuilder()
-                .insert(0, "Effective tool")
+                .insert(0, "Effective tool: " + currentLayer
+                        .getEffectiveToolType()
+                        .getName())
                 .insert(2, "Durability: " + veinResource.getCurrentDurability() + "/" + veinResource.getMaxDurability())
                 .insert(3, "Completion: " + (int) ((double) veinResource.getCurrentDurability() / (double) veinResource.getMaxDurability() * 100) + "%")
                 .insert(5, "Total gathered: " + totalResourceGathered);
 
-        return new ItemBuilder(currentLayer.getMaterialType())
+        return new ItemBuilder(currentLayer.getMaterial())
                 .setLore(loreBuilder.build())
                 .build();
     }
