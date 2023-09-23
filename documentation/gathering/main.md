@@ -9,14 +9,15 @@ The module is responsible for gathering resources from the world.
 [1. Technical Implementation](./technical-implementation.md)
 
 2. Logical Part
-   1. [Vein](#vein)
-   2. [VeinType](#veintype)
-   3. [VeinDrop](#veindrop)
-   4. [Resource](#resource)
-   5. [VeinTool](#veintool)
-   6. [PlayerVeinTool](#playerveintool)
-   7. [VeinTypeToolsEnum](#veintypetoolsenum)
-   8. [VeinLocation](#veinlocation)
+    1. [Vein](#vein)
+    2. [VeinType](#veintype)
+    3. [VeinDrop](#veindrop)
+    4. [Resource](#resource)
+    5. [VeinTool](#veintool)
+    6. [PlayerVeinTool](#playerveintool)
+    7. [VeinTypeToolsEnum](#veintypetoolsenum)
+    8. [VeinLocation](#veinlocation)
+    9. [ResourceLayer](#resourcelayer)
 
 ### VeinLocation
 
@@ -59,6 +60,11 @@ Collection: `veins`
          "max": Int32;
       }
    }];,
+   "resourceLayers": {
+      "title": String;
+      "material": Int32;
+      "effectiveTool": Int32; (ToolType)
+   }
    respawnTime: Int32;
 }
 ```
@@ -147,3 +153,20 @@ Collection: `enums`
    }
 }
 ```
+
+---
+
+### ResourceLayer
+
+`ResourceLayer` — the layer that is placed in the middle of the GUI, it has the effective took, so
+for faster gathering.
+
+```
+{
+   "name": String;
+   "materialId": Int32;
+   "effectiveToolType": Int32; (ToolType)
+}
+```
+
+---

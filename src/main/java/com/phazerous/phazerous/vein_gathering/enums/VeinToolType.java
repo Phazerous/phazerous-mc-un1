@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum VeinToolType {
-    PICKAXE(0, "Pickaxe"), HAMMER(1, "Hammer"), CROWBAR(2, "Crowbar"), CHISEL(3, "Chisel");
+    HAND(0, "HAND"), PICKAXE(1, "Pickaxe"), HAMMER(2, "Hammer"), CROWBAR(3, "Crowbar"), CHISEL(4, "Chisel");
 
     private final int typeId;
     private final String name;

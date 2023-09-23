@@ -51,8 +51,14 @@ public class VeinGUIManager {
         HashMap<Integer, VeinTool> veinToolsInSlots = playerVeinToolsInSlots.get(player.getUniqueId());
 
         for (Map.Entry<Integer, VeinTool> veinToolInSlot : veinToolsInSlots.entrySet()) {
-            inventory.setItem(veinToolInSlot.getKey(), veinToolsManager.buildTool(veinToolInSlot.getValue()));
+            Integer slot = veinToolInSlot.getKey();
+
+            if (slot == veinGUIRepository.getSlotToPlaceHand()) continue; // SKIPPING BUILDING HAND
+
+            inventory.setItem(slot, veinToolsManager.buildTool(veinToolInSlot.getValue()));
         }
+
+        inventory.setItem(veinGUIRepository.getSlotToPlaceHand(), veinGUIRepository.getHandTool());
 
         inventory.setItem(INVENTORY_RESOURCE_ITEM_SLOT, veinResourceLayerItem);
 
@@ -83,22 +89,22 @@ public class VeinGUIManager {
 
         HashMap<Integer, VeinTool> veinToolsInSlots = playerVeinToolsInSlots.get(player.getUniqueId());
 
-        List<Integer> slotsToPlaceTools = getSlotsToPlaceVeinTools();
+        List<Integer> slotsToPlaceTools = veinGUIRepository.getSlotsToPlaceVeinTools();
         Collections.shuffle(slotsToPlaceTools);
 
         for (int i = 0; i < veinTools.size(); i++) {
             veinToolsInSlots.put(slotsToPlaceTools.get(i), veinTools.get(i));
         }
+
+        veinToolsInSlots.put(veinGUIRepository.getSlotToPlaceHand(), veinToolsManager.getHandTool());
+
+        playerVeinToolsInSlots.put(player.getUniqueId(), veinToolsInSlots);
     }
 
     public boolean isVeinInventory(Inventory inventory) {
         return inventory
                 .getTitle()
                 .equalsIgnoreCase(INVENTORY_NAME);
-    }
-
-    private List<Integer> getSlotsToPlaceVeinTools() {
-        return new ArrayList<>(Arrays.asList(38, 39, 40, 41, 42));
     }
 
     private Inventory createBackgroundInventory() {

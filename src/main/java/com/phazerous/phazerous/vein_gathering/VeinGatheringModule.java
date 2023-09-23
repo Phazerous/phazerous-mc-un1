@@ -9,7 +9,6 @@ import com.phazerous.phazerous.vein_gathering.listeners.GatherStartListener;
 import com.phazerous.phazerous.vein_gathering.listeners.VeinGUIListener;
 import com.phazerous.phazerous.vein_gathering.manager.*;
 import com.phazerous.phazerous.vein_gathering.repository.VeinGUIRepository;
-import com.phazerous.phazerous.vein_gathering.repository.VeinLayersRepository;
 import com.phazerous.phazerous.vein_gathering.repository.VeinRepository;
 import com.phazerous.phazerous.vein_gathering.repository.VeinToolsRepository;
 import lombok.Getter;
@@ -24,12 +23,11 @@ public class VeinGatheringModule extends AbstractModule {
         VeinRepository veinRepository = new VeinRepository(dbManager);
         VeinToolsRepository veinToolsRepository = new VeinToolsRepository(dbManager);
         VeinGUIRepository veinGUIRepository = new VeinGUIRepository();
-        VeinLayersRepository veinLayersRepository = new VeinLayersRepository();
 
         VeinManager veinManager = new VeinManager(sharedModule.getSpawnPacketManager(), veinRepository);
         VeinToolsManager veinToolsManager = new VeinToolsManager(playerRepository, veinToolsRepository);
         VeinResourceManager veinResourceManager = new VeinResourceManager();
-        VeinGatheringManager veinGatheringManager = new VeinGatheringManager(veinLayersRepository, veinToolsManager, veinManager, veinResourceManager, dropManager);
+        VeinGatheringManager veinGatheringManager = new VeinGatheringManager(veinToolsManager, veinManager, veinResourceManager, dropManager);
         VeinGUIManager veinGUIManager = new VeinGUIManager(veinGUIRepository, veinToolsManager, veinGatheringManager, sharedModule.getScheduler());
 
         veinGatheringManager.setVeinGUIManager(veinGUIManager);

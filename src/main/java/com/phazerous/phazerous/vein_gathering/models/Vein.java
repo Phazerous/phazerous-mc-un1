@@ -18,6 +18,7 @@ public class Vein {
     private Integer resourceDurability;
     private List<Drop> drops;
     private Integer respawnTime;
+    private List<VeinResourceLayer> resourceLayers;
 
     public VeinType getVeinType() {
         return VeinType.getVeinType(veinType);

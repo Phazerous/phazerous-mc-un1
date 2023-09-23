@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -14,11 +15,14 @@ public class VeinGUIRepository {
     private final ItemStack coolDownItem;
     private final ItemStack backgroundInventoryItem;
     private final ItemStack closeInventoryItem;
+    private final ItemStack handTool;
 
     public VeinGUIRepository() {
         coolDownItem = createCoolDownItem();
         backgroundInventoryItem = createBackgroundInventoryItem();
         closeInventoryItem = createCloseInventoryItem();
+
+        handTool = createHandTool();
     }
 
     public ItemStack createBackgroundInventoryItem() {
@@ -80,5 +84,24 @@ public class VeinGUIRepository {
         };
 
         return InventoryUtils.getItemsSlotsByPattern(pattern, 2);
+    }
+
+    public List<Integer> getSlotsToPlaceVeinTools() {
+        return new ArrayList<>(Arrays.asList(38, 39, 41, 42));
+    }
+
+    private ItemStack createHandTool() {
+        final String HAND_TOOL_TITLE = "Hand";
+        final int HAND_TOOL_MATERIAL = 159;
+
+        return new ItemBuilder(HAND_TOOL_MATERIAL)
+                .setDisplayName(HAND_TOOL_TITLE)
+                .build();
+    }
+
+    public int getSlotToPlaceHand() {
+        final int HAND_SLOT = 40;
+
+        return HAND_SLOT;
     }
 }

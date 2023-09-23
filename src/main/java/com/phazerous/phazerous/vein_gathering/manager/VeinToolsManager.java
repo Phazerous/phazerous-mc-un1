@@ -22,6 +22,10 @@ public class VeinToolsManager {
         this.veinToolsRepository = veinToolsRepository;
     }
 
+    public VeinTool getHandTool() {
+        return veinToolsRepository.getHandTool();
+    }
+
     public List<VeinTool> getPlayerVeinTools(Player player, Vein vein) {
         List<Integer> veinToolsTypesIds = vein
                 .getVeinType()

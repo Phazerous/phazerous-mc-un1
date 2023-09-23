@@ -5,9 +5,17 @@ import org.bson.types.ObjectId;
 
 @Getter
 public class VeinTool {
-    private ObjectId _id;
-    private String title;
-    private Integer material;
     private Integer toolType;
     private Integer strength;
+    private String title;
+    private Integer material;
+    private ObjectId _id;
+
+    public VeinTool() {
+    }
+
+    public VeinTool(Integer toolType, Integer strength) {
+        this.toolType = toolType;
+        this.strength = strength;
+    }
 }

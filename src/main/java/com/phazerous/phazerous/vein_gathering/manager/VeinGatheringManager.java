@@ -8,7 +8,6 @@ import com.phazerous.phazerous.vein_gathering.models.Vein;
 import com.phazerous.phazerous.vein_gathering.models.VeinResourceLayer;
 import com.phazerous.phazerous.vein_gathering.models.VeinSession;
 import com.phazerous.phazerous.vein_gathering.models.VeinTool;
-import com.phazerous.phazerous.vein_gathering.repository.VeinLayersRepository;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -21,14 +20,12 @@ public class VeinGatheringManager implements IGatheringStartObserver {
     private final VeinManager veinManager;
     private final VeinToolsManager veinToolsManager;
     private final VeinResourceManager veinResourceManager;
-    private final VeinLayersRepository veinLayersRepository;
     private final DropManager dropManager;
 
     private final HashMap<UUID, VeinSession> playerVeinSession = new HashMap<>();
     private VeinGUIManager veinGUIManager;
 
-    public VeinGatheringManager(VeinLayersRepository veinLayersRepository, VeinToolsManager veinToolsManager, VeinManager veinManager, VeinResourceManager veinResourceManager, DropManager dropManager) {
-        this.veinLayersRepository = veinLayersRepository;
+    public VeinGatheringManager(VeinToolsManager veinToolsManager, VeinManager veinManager, VeinResourceManager veinResourceManager, DropManager dropManager) {
         this.veinToolsManager = veinToolsManager;
         this.veinManager = veinManager;
         this.veinResourceManager = veinResourceManager;
@@ -63,7 +60,7 @@ public class VeinGatheringManager implements IGatheringStartObserver {
     }
 
     private VeinResourceLayer getRandomResourceLayer(Vein vein) {
-        List<VeinResourceLayer> layers = veinLayersRepository.getVeinLayers(vein.getVeinType());
+        List<VeinResourceLayer> layers = vein.getResourceLayers();
 
         return RandomUtils.getRandomElement(layers);
     }
