@@ -1,15 +1,18 @@
 package com.phazerous.phazerous.items;
 
+import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.db.enums.CollectionType;
 import com.phazerous.phazerous.db.utils.DocumentParser;
 import com.phazerous.phazerous.items.enums.ItemType;
 import com.phazerous.phazerous.items.enums.RarityType;
-import com.phazerous.phazerous.db.DBManager;
-import com.phazerous.phazerous.items.models.ArmorItem;
-import com.phazerous.phazerous.items.models.CustomItem;
-import com.phazerous.phazerous.items.models.GatheringItem;
-import com.phazerous.phazerous.items.models.WeaponItem;
+import com.phazerous.phazerous.items.models.items.ArmorItem;
+import com.phazerous.phazerous.items.models.items.CustomItem;
+import com.phazerous.phazerous.items.models.items.GatheringItem;
+import com.phazerous.phazerous.items.models.items.WeaponItem;
+import com.phazerous.phazerous.items.repository.ItemRepository;
 import com.phazerous.phazerous.items.utils.ItemUtils;
+import com.phazerous.phazerous.utils.ConsoleDispatcher;
+import javafx.util.Pair;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -25,10 +28,26 @@ import java.util.List;
 public class ItemManager {
 
     private final DBManager dbManager;
+    private final ItemBuilderDirector itemBuilderDirector;
+    private final ItemRepository itemRepository;
     private final HashMap<ObjectId, ItemStack> itemsHashmap = new HashMap<>();
 
-    public ItemManager(DBManager dbManager) {
+    public ItemManager(DBManager dbManager, ItemRepository itemRepository, ItemBuilderDirector itemBuilderDirector) {
         this.dbManager = dbManager;
+        this.itemRepository = itemRepository;
+        this.itemBuilderDirector = itemBuilderDirector;
+    }
+
+    public ItemStack buildItem(ObjectId itemId) {
+        Pair<CustomItem, ItemType> item = itemRepository.getItem(itemId);
+
+        try {
+            return itemBuilderDirector.buildItem(item.getKey(), item.getValue());
+        } catch (Exception e) {
+            ConsoleDispatcher.error("Error building item");
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public ItemStack getItemById(ObjectId itemId) {
@@ -64,7 +83,9 @@ public class ItemManager {
             itemsHashmap.put(itemId, itemStack);
         }
 
-        return itemsHashmap.get(itemId).clone();
+        return itemsHashmap
+                .get(itemId)
+                .clone();
     }
 
     private ItemType getItemType(Document itemDoc) {

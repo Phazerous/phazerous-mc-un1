@@ -1,6 +1,6 @@
 package com.phazerous.phazerous.regions.models;
 
-import com.phazerous.phazerous.gathering.models.VeinLocation;
+import com.phazerous.phazerous.vein_gathering.models.VeinLocation;
 import lombok.Getter;
 import org.bson.types.ObjectId;
 

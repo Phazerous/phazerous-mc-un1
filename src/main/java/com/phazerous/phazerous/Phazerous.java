@@ -7,7 +7,6 @@ import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.economy.EconomyManager;
 import com.phazerous.phazerous.economy.EconomyModule;
 import com.phazerous.phazerous.entities.EntityModule;
-import com.phazerous.phazerous.gathering.GatheringModule;
 import com.phazerous.phazerous.gui.GUIModule;
 import com.phazerous.phazerous.items.ItemManager;
 import com.phazerous.phazerous.items.ItemsModule;
@@ -16,6 +15,7 @@ import com.phazerous.phazerous.player.PlayerModule;
 import com.phazerous.phazerous.regions.RegionModule;
 import com.phazerous.phazerous.shared.SharedModule;
 import com.phazerous.phazerous.utils.ScoreboardManager;
+import com.phazerous.phazerous.vein_gathering.VeinGatheringModule;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -25,7 +25,9 @@ public class Phazerous extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        getServer().getConsoleSender().sendMessage("[Phazerous]: enabled.");
+        getServer()
+                .getConsoleSender()
+                .sendMessage("[Phazerous]: enabled.");
 
         initialize();
 
@@ -37,7 +39,7 @@ public class Phazerous extends JavaPlugin implements Listener {
 
         SharedModule sharedModule = new SharedModule(this, dbManager);
 
-        ItemsModule itemsModule = new ItemsModule(dbManager);
+        ItemsModule itemsModule = new ItemsModule(sharedModule);
         ItemManager itemManager = itemsModule.getItemManager();
 
         ScoreboardManager scoreboardManager = new ScoreboardManager();
@@ -49,7 +51,7 @@ public class Phazerous extends JavaPlugin implements Listener {
 
         PlayerModule playerModule = new PlayerModule(sharedModule);
 
-        GatheringModule gatheringModule = new GatheringModule(sharedModule, playerModule.getPlayerRepository());
+        VeinGatheringModule veinGatheringModule = new VeinGatheringModule(sharedModule, playerModule.getPlayerRepository(), itemsModule.getDropManager());
 
 
         GUIModule guiModule = new GUIModule(dbManager, itemManager, economyManager);
@@ -57,11 +59,11 @@ public class Phazerous extends JavaPlugin implements Listener {
         MessageDispatcher messageDispatcher = new MessageDispatcher();
 
         RegionModule regionModule = new RegionModule(sharedModule);
-        regionModule.subscribeToRegionChange(gatheringModule.getVeinManager());
+        regionModule.subscribeToRegionChange(veinGatheringModule.getVeinManager());
         regionModule.subscribeToRegionChange(messageDispatcher);
 
-        registerCommands(entityModule, economyModule, itemsModule, guiModule, gatheringModule);
-        registerListeners(entityModule, economyModule, itemsModule, guiModule, regionModule, gatheringModule);
+        registerCommands(entityModule, economyModule, itemsModule, guiModule, veinGatheringModule);
+        registerListeners(entityModule, economyModule, itemsModule, guiModule, regionModule, veinGatheringModule);
     }
 
     private void registerCommands(AbstractModule... modules) {

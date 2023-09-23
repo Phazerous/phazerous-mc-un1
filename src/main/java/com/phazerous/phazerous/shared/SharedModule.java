@@ -3,7 +3,6 @@ package com.phazerous.phazerous.shared;
 import com.phazerous.phazerous.archtecture.AbstractModule;
 import com.phazerous.phazerous.db.DBManager;
 import com.phazerous.phazerous.player.PlayerRepository;
-import com.phazerous.phazerous.utils.Scheduler;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
