@@ -203,8 +203,6 @@ public class VeinGUIManager {
 
         if (veinTool == null) return;
 
-        veinGatheringManager.handleGather(player, veinTool);
-        setCoolDown(player);
-
+        if (veinGatheringManager.handleGather(player, veinTool)) setCoolDown(player);
     }
 }

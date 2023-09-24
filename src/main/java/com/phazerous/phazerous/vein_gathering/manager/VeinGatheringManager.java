@@ -21,7 +21,6 @@ public class VeinGatheringManager implements IGatheringStartObserver {
     private final VeinToolsManager veinToolsManager;
     private final VeinResourceManager veinResourceManager;
     private final DropManager dropManager;
-
     private final HashMap<UUID, VeinSession> playerVeinSession = new HashMap<>();
     private VeinGUIManager veinGUIManager;
 
@@ -46,17 +45,31 @@ public class VeinGatheringManager implements IGatheringStartObserver {
         veinGUIManager.addDrop(player, items.toArray(new ItemStack[0]));
     }
 
-    public void handleGather(Player player, VeinTool veinTool) {
+    /**
+     * Handles gathering of the vein resource
+     *
+     * @param player   The player that is gathering
+     * @param veinTool The tool that is being used
+     * @return `true` if the successful gather, `false` — when turns are out
+     */
+    public boolean handleGather(Player player, VeinTool veinTool) {
         VeinSession veinSession = playerVeinSession.get(player.getUniqueId());
 
+        if (veinSession.getTurnsLeft() <= 0) return false;
+
         boolean isBroken = veinResourceManager.damageVeinResource(veinSession.getVeinResource(), veinTool.getStrength());
+        veinSession.decreaseTurnsLeft(1);
 
-        if (isBroken) {
-            handleResourceBreak(player, veinSession);
+        if (isBroken) handleResourceBreak(player, veinSession);
+
+        if (veinSession.getTurnsLeft() > 0) {
+            veinSession.setCurrentLayer(getRandomResourceLayer(veinSession.getVein()));
+            veinGUIManager.setResourceLayerItemStack(player, veinSession.buildVeinResourceItemStack());
+            return true;
+        } else {
+            veinGUIManager.setResourceLayerItemStack(player, veinSession.buildTurnsOutItemStack());
+            return false;
         }
-
-        veinSession.setCurrentLayer(getRandomResourceLayer(veinSession.getVein()));
-        veinGUIManager.setResourceLayerItemStack(player, veinSession.buildVeinResourceItemStack());
     }
 
     private VeinResourceLayer getRandomResourceLayer(Vein vein) {

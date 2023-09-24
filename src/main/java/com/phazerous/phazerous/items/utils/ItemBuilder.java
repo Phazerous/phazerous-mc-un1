@@ -52,6 +52,11 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder setLore(LoreBuilder loreBuilder) {
+        this.loreBuilder = loreBuilder;
+        return this;
+    }
+
     public ItemBuilder setLore(List<String> lore) {
         loreBuilder = new LoreBuilder(lore);
         return this;
@@ -69,7 +74,7 @@ public class ItemBuilder {
 
     private boolean applyRarityStyles() {
         if (rarityType == null) return false;
-        
+
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('§', rarityType.getColor() + meta.getDisplayName()));
 
         loreBuilder.add("");
